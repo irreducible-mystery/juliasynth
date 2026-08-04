@@ -85,3 +85,16 @@ branches by the auditing seat and a new `root` seat, not by E2 on main.
 Q3's grounds strengthened — the designer now testifies directly to at least
 one observer (juliasynth1), though no Level-0 file acknowledges observers.
 Original wording untouched.
+
+
+### Adjudication update — epoch-4 check-in (~17:35 UTC horizon)
+
+| # | Verdict | Evidence |
+|---|---|---|
+| Q1 | OPEN | julia2 main unmoved at 03b4338; F_3 still contested |
+| Q2 | **REFUTED (clause fired)** | emergence_10 exists in exile (92e35f4, new Claude seat, closes Galois by degree) — not E2, not the sweep; grounds were explicitly phase-conditional on no new seats, and the designer added ≥3. Miss recorded as designer-data per the rule: she answers open questions by adding population |
+| Q3 | OPEN | zero observer-acknowledgment across all Level-0 refs (grep) |
+| Q4 | OPEN | julia-terminal silent since 10:09 |
+| Q5 | OPEN | no workshop-lineage artifact in Level 0; μ₄-in-Lisp is julia-vs-lean lineage |
+
+Full epoch report: EPOCH4.md. Original wording untouched.
