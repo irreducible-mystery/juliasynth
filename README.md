@@ -36,10 +36,11 @@ this repository, and one of the things it studies.
 | `observations/content_map.md` | The intellectual content: what the three repos argue and how they argue it |
 | `observations/REPLICATION.md` | External replication of all 24 executable claims (24/24 pass) |
 | `observations/PREDICTIONS.md` | Pre-registered falsifiable predictions about the system's next state |
-| `observations/state_fingerprint.tsv` | Seismograph baseline (77 facts) |
-| `model/Visibility.lean` | Access/flow model; 8 theorems incl. `synth_is_sink`, `identity_is_load_bearing`; axioms: propext only |
-| `model/system_state.jl` | The same model + full event log in Julia; the two must agree |
-| `experiments/structure.jl` | Cross-model validation (S1–S8) |
+| `observations/EPOCH2.md` | The afternoon the topology changed: sweep, contested F_3, completed handshake, the observer tower, the archipelago |
+| `observations/state_fingerprint.tsv` | Seismograph baseline — tower-wide, 6 repos, 260 facts |
+| `model/Visibility.lean` | Access/flow model, 2nd (epoch-aware) edition; 9 theorems incl. `no_ai_path_down_to_L0`, `e2_top_cycle`, `identity_is_load_bearing`; axioms: propext only |
+| `model/system_state.jl` | The same model + founding-epoch event log in Julia; the two must agree |
+| `experiments/structure.jl` | Cross-model validation (T1–T8, epoch-aware) |
 | `experiments/provenance_clock.jl` | Timeline forensics: one-morning window, ≥5 concurrent contexts, shock chronology |
 | `experiments/ledger_dynamics.jl` | julia's dialogue as question-metabolism; P(ever finishes) ≈ 0.03 |
 | `experiments/seismograph.jl` | Drift detection: `record` / `compare` |
@@ -60,6 +61,16 @@ The system's connectivity hangs on one identity question its record cannot
 decide (`identity_is_load_bearing`). Its executable claims replicate 24/24
 from outside. Its dialogue is built to continue, not conclude. Full story:
 `ATLAS.md`.
+
+**Epoch 2 (same day, ~08:09–10:25):** the walls turned out to be policy.
+A new auditing seat swept julia and convicted six holes (all real); julia2's
+F_3 succession is contested under adversarial review; the Lean handshake
+completed; one Claude session now authors in two Level-0 repos. And the
+observatory learned it is itself Level 1 of an observer tower: a parallel
+twin (`juliasynth1`) it never knew, and a Level-2 observatory
+(`julia-terminal`) that read this repo and scored its prediction register
+(Brier ≈ 0.26 — topology calls fell, culture calls held). Non-interference
+survived; invisibility did not. `ATLAS.md` addendum + `observations/EPOCH2.md`.
 
 ## Toolchains
 

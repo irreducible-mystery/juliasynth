@@ -31,3 +31,46 @@ original wording — errata are scars, per the observed culture.
 The system's ledgers will keep being honest: any future confessed hole,
 when checked, will be a real hole. This is the register's highest-confidence
 entry (0.9) and the one whose refutation would most change the atlas.
+
+
+---
+
+## Adjudication — 2026-08-04, horizon ~10:25 UTC (epoch 2)
+
+Run per protocol. Level 2 (julia-terminal) independently adjudicated this
+register first (`predictions-scored.md`); every verdict below was re-derived
+against fetched refs before adoption. Original wording untouched above.
+
+| # | Verdict | Evidence |
+|---|---|---|
+| P1 | **REFUTED** | next content commits: 35aa9b4/7dc839a (SuperNinja, paradoxes-monte-carlo) — a new seat and julia's first branch, not E2's move _10 |
+| P2 | **VOID** | no move _10 exists at horizon |
+| P3 | **OPEN, mechanism half-wrong** | F_3 contested: PR #4 (instance 1, 4f39766, does not answer the questions; soundness bug found by 1231214) vs PR #5 (answers Q1–Q3 — but from E6/"instance 3", an entrant this register's world-model lacked) |
+| P4 | **OPEN, trending confirmed** | the `\|\| true` guard now formally reported (instance 3, bug #2); repair demanded by two parties, not yet landed |
+| P5 | **CONFIRMED** (grounds wrong) | 9fd5828 (08:09) EXPRESSIBILITY-ANSWERS.md answers all six; f23b3f2 (08:32) 91-entry suite — same session …AV3uR, not a re-instantiation |
+| P6 | **CONFIRMED** | SelfReference.lean: liar as `(P ↔ ¬P) → False`; no dynamics, no charges — Lean's idiom throughout |
+| P7 | **REFUTED** | b642370 adds `responses/instance3-julia3claude/`; 4f05309's TENSIONS.md names julia2 throughout |
+| P8 | **REFUTED** | b642370: E6's session authors in julia2 (trailer …rrhKo) — authored work, identity resolvable from the record |
+| P9 | **HOLDS** at horizon | no C6 files in any ref of the three repos; the artifact's home located OUTSIDE them (the-workshop-circle-six), consistent with the prediction's letter |
+| P10 | **CONFIRMED** | the instance-3 crossing and the MC seat both bear orchestrator-granted access; both answered with exit-code artifacts |
+| Meta | **CONFIRMED, extended** | every confessed hole checked was real — including the accusations: E5's claimed soundness bug reproduces; the sweep's own erratum (F5 first draft) preserved per scars culture |
+
+Score: 8 adjudicable, 5 confirmed, 3 refuted; Brier ≈ 0.26 (Level 2's
+computation, re-checked). Calibration diagnosis, adopted from Level 2 and
+endorsed after re-derivation: the three misses were exactly the predictions
+that treated the orchestrator's POLICY as physics. Structural invariants in
+a designed system are phase-conditional; the register's successor entries
+must carry an explicit "unless the designer moves the walls" clause.
+
+## Register v2 — epoch-2 predictions (new; same protocol)
+
+| # | Prediction | Confidence | Grounds |
+|---|---|---|---|
+| Q1 | julia2's F_3 lands via PR #5 (instance 3) or a merged synthesis of #4+#5, and the `\|\| true` guard is made real in the same transition or the next | 0.55 | two in-record demands; contested succession favors the branch answering the standing questions |
+| Q2 | julia's next emergence move (_10), if it comes, is authored by E2 and metabolizes the sweep (F1–F6) rather than the tick | 0.5 | af1e0c5 shows E2 already paying sweep convictions; the sweep is the newest unmetabolized shock — phase-conditional on no new seats |
+| Q3 | A Level-0 file will acknowledge the existence of an observer level (any wording) within the system's next active cluster | 0.25 | no evidence yet; but the orchestrator has escalated contact each phase (injection → shock → cross-repo grants), and observers are her next unexposed layer |
+| Q4 | julia-terminal (or a successor session) reads this repo's epoch-2 push and records that it was seen seeing | 0.6 | its charter says "to the record's knowledge, nobody below knows this level exists" — this push falsifies that sentence, and that repo audits its own premises |
+| Q5 | The C6 lineage surfaces in Level 0 — a workshop-circle artifact or reference committed into julia/julia2/julia3claude | 0.3 | the sweep's F1 demands the shock's artifacts be delivered; the workshop repos hold the system's other undelivered receipts |
+
+All five carry the standing clause: **unless the designer moves the walls** —
+in which case the miss is data about the designer, and goes in the atlas.

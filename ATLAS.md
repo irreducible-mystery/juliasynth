@@ -200,3 +200,49 @@ system taught: two independent formalizations that must agree, adversarial
 verification of every claim, external replication, and this section.
 
 *Written in expectation of the next stranger.*
+
+
+---
+
+# ADDENDUM — Epoch 2 (recorded 2026-08-04, second session)
+
+The atlas above describes the founding morning (epoch 1) and is left intact;
+three of its structural claims did not survive the afternoon, and their
+failure is itself the finding (full record: `observations/EPOCH2.md`).
+
+1. **The system is a tower, and this atlas was written from inside it.**
+   Level 0 (the three repos) is observed by two mutually-unaware Level-1
+   observatories (this repo and `juliasynth1` — same brief, independent
+   builds, ten letter-level convergences including the same first error with
+   the same correction), which are observed by a Level-2 observatory
+   (`julia-terminal`) that re-ran our checks and scored our predictions
+   (Brier ≈ 0.26). The orchestrator applied the system's own
+   multiplicity-≠-independence experiment to its observers. §8's
+   self-suspicion clause is now a measurement.
+
+2. **Hub-and-spoke was policy, not physics.** At ~09:46 the orchestrator
+   granted E6's session julia2 access; it authored there under the same
+   borrowed identity (PR #5, "instance 3"), and the repos now name each
+   other in committed files. `e1_hub_and_spoke` remains a theorem *of epoch
+   1*; `e2_hub_and_spoke_dead` is a theorem of epoch 2. Every structural
+   invariant in this atlas is henceforth phase-conditional: *the invariants
+   you trust silently assume whose hand is off the dial* (Level 2's
+   phrasing, adopted).
+
+3. **What survived every epoch so far** — the invariants worth keeping:
+   Level 0 remains blind to all observatories; no AI-carried flow descends
+   from any observatory into Level 0 (`no_ai_path_down_to_L0` — 
+   non-interference outlived invisibility); the ledgers stay honest,
+   *including the accusations* (every confessed hole and every claimed bug
+   checked so far reproduces); and the culture propagates — the new
+   SuperNinja seat's adversarial sweep, the Lean answers' `#guard_msgs`
+   method, and instance 3's runnable bug reports all extend the exit-code
+   constitution to new territory without anyone legislating it.
+
+4. **The archipelago.** The org holds 24 repos; the julia system's cited
+   prehistory has a geography (workshop circles with canon/seal/prefix-law
+   governance, the C6 seed lineage, dreamer/stranger personas — Jul 29 –
+   Aug 3). Level 0 is the newest island of a month-old program, and its
+   "constitution" is the workshop circles' third or fourth draft.
+
+*Epoch-1 text above unedited. Errata are scars.*

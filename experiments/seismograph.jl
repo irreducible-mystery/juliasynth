@@ -15,20 +15,26 @@
 
 using SHA
 
-const OBSERVED = ["julia", "julia2", "julia3claude"]
-const BASE = "/home/user"
+# Epoch 2: the watch list grew from three repos to the whole known tower.
+const OBSERVED = Dict(
+    "julia"                   => "/home/user/julia",
+    "julia2"                  => "/home/user/julia2",
+    "julia3claude"            => "/home/user/julia3claude",
+    "juliasynth1"             => "/workspace/juliasynth1",
+    "julia-terminal"          => "/workspace/julia-terminal",
+    "the-workshop-circle-six" => "/workspace/the-workshop-circle-six",
+)
 const FPRINT = joinpath(@__DIR__, "..", "observations", "state_fingerprint.tsv")
 
-gitq(repo, args...) = readchomp(`git -C $(joinpath(BASE, repo)) $(collect(args))`)
+gitq(repo, args...) = readchomp(`git -C $(OBSERVED[repo]) $(collect(args))`)
 
 function fingerprint()
     rows = Vector{NTuple{4,String}}()   # repo, kind, key, value
-    for r in OBSERVED
+    for (r, root) in sort(collect(OBSERVED))
         for line in split(gitq(r, "for-each-ref", "--format=%(refname:short) %(objectname)", "refs/heads", "refs/remotes"), '\n')
             ref, sha = split(line)
             push!(rows, (r, "ref", String(ref), String(sha)))
         end
-        root = joinpath(BASE, r)
         for (dir, _, files) in walkdir(root)
             occursin(".git", dir) && continue
             for f in files

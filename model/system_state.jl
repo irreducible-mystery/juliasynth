@@ -12,7 +12,8 @@ using Dates
 
 export Commit, EVENTS, IDENT_KIND, writes, reads,
        resolve_raw, resolve_resolved, resolve_collapsed, RESOLUTIONS,
-       entities, flows_via, reachable, REPOS, idents
+       entities, flows_via, reachable, REPOS, idents,
+       LEVEL, isai, ai_flows
 
 # ── §1 The event log ────────────────────────────────────────────────────────
 
@@ -46,7 +47,11 @@ const EVENTS = [
     Commit(:julia3, "092be9f", DateTime(2026,8,4,7,53,40), :kelly,           "Merge PR #1 (as irreducible-mystery)"),
 ]
 
-const REPOS = (:julia, :julia2, :julia3, :synth)
+const REPOS = (:julia, :julia2, :julia3, :synth, :synth1, :terminal)
+
+"Tower level per repo: 0 = observed system, 1 = observers, 2 = observer of observers."
+const LEVEL = Dict(:julia => 0, :julia2 => 0, :julia3 => 0,
+                   :synth => 1, :synth1 => 1, :terminal => 2)
 
 # ── §2 Identities ───────────────────────────────────────────────────────────
 
@@ -60,28 +65,58 @@ const IDENT_KIND = Dict(               # entity labels per observations/identity
     :merge_bot      => :bot,       # E8  superninja-app[bot]          (julia2)
     :claude_ghost   => :ai,        # E6  Claude session ...rhKo, ghost-writes julia3 under E1's identity
     :claude_lean    => :ai,        # E7  Claude session ...V3uR, noreply@anthropic.com (julia3)
-    :observer       => :observer,  # this repository only
+    :ninja_new      => :ai,        # E3c? plain "SuperNinja": julia's e2 MC branch + adversarial sweep
+    :observer1      => :observer,  # juliasynth1's session ...zpGue6 (Level 1 twin)
+    :observer2      => :observer,  # julia-terminal's session (Level 2)
+    :observer       => :observer,  # this repository (Level 1)
 )
+
+isai(i::Symbol) = i !== :kelly     # bots and observers included: all but the human
 
 idents() = collect(keys(IDENT_KIND))
 
 # ── §3 Access, derived from the record ──────────────────────────────────────
 
-"writes(i) — repos in which identity i has authored, ghost-written, or merged commits."
-function writes(i::Symbol)
-    i === :observer && return Set([:synth])
-    # E6 ghost-writes julia3claude's content commits under E1's git identity
-    # (Co-Authored-By + Claude-Session trailers on 4954a3f, 48390e1, ea552d2)
-    i === :claude_ghost && return Set([:julia3])
-    Set(c.repo for c in EVENTS if c.ident === i)
+"writes(i; epoch) — repos where identity i authored, ghost-wrote, or merged.
+epoch 1 = founding morning; epoch 2 adds the post-09:46 policy changes
+(evidence: observations/EPOCH2.md)."
+function writes(i::Symbol; epoch::Int=1)
+    base = if i === :observer
+        Set([:synth])
+    elseif i === :claude_ghost
+        # ghost-writes julia3 under E1's identity (trailers on 4954a3f, 48390e1, ea552d2)
+        Set([:julia3])
+    else
+        Set(c.repo for c in EVENTS if c.ident === i)
+    end
+    epoch >= 2 || return base
+    extra = Dict(
+        :ninja_new    => Set([:julia]),     # 35aa9b4..4739ac6 (MC branch + sweep)
+        :merge_bot    => Set([:julia]),     # julia PRs #1/#2 (272de2d, abdec49)
+        :claude_ghost => Set([:julia2]),    # b642370, trailer ...rrhKo ("instance 3")
+        :observer1    => Set([:synth1]),    # f0adad4
+        :observer2    => Set([:terminal]),  # 16ec28e
+    )
+    union(base, get(extra, i, Set{Symbol}()))
 end
 
-"reads(i) — superset of writes: the owner reads all observed repos; the
-observer reads everything; members read what they write."
-function reads(i::Symbol)
-    i === :kelly    && return Set([:julia, :julia2, :julia3])
-    i === :observer && return Set(collect(REPOS))
-    writes(i)
+"reads(i; epoch) — superset of writes. Observed behavior only: the owner's
+CAPABILITY covers every repo at all times (she owns the org); this function
+records reads in evidence. Epoch 2: observer2 read both Level-1 repos and
+scored this repo's register; this session read synth1 and terminal."
+function reads(i::Symbol; epoch::Int=1)
+    i === :kelly && return Set([:julia, :julia2, :julia3])
+    if i === :observer
+        return epoch >= 2 ? Set(collect(REPOS)) :
+                            Set([:julia, :julia2, :julia3, :synth])
+    end
+    epoch >= 2 || return writes(i; epoch)
+    extra = Dict(
+        :claude_ghost => Set([:julia2]),   # read julia2's suite to write TENSIONS.md
+        :observer1    => Set([:julia, :julia2, :julia3, :synth1]),
+        :observer2    => Set([:julia, :julia2, :julia3, :synth, :synth1, :terminal]),
+    )
+    union(writes(i; epoch), get(extra, i, Set{Symbol}()))
 end
 
 # ── §4 Identity resolution, three levels (mirrors Visibility.lean §3) ───────
@@ -101,21 +136,25 @@ const RESOLUTIONS = [
 "entities(ρ) — canonical entity set under resolution ρ."
 entities(ρ) = Set(ρ(i) for i in idents())
 
-"flows_via(ρ; banned) — directed repo→repo one-step flow relation: some
-non-banned entity reads the source and writes the destination."
-function flows_via(ρ; banned::Union{Nothing,Symbol}=nothing)
+"flows_via(ρ; banned, epoch, only_ai) — directed repo→repo one-step flow:
+some admitted entity reads the source and writes the destination."
+function flows_via(ρ; banned::Union{Nothing,Symbol}=nothing, epoch::Int=1, only_ai::Bool=false)
     edges = Set{Tuple{Symbol,Symbol}}()
     for e in entities(ρ)
         (banned !== nothing && e === ρ(banned)) && continue
         group = [i for i in idents() if ρ(i) === e]
-        er = union(Set{Symbol}(), (reads(i) for i in group)...)
-        ew = union(Set{Symbol}(), (writes(i) for i in group)...)
+        only_ai && !all(isai, group) && continue
+        er = union(Set{Symbol}(), (reads(i; epoch) for i in group)...)
+        ew = union(Set{Symbol}(), (writes(i; epoch) for i in group)...)
         for r in er, w in ew
             r === w || push!(edges, (r, w))
         end
     end
     edges
 end
+
+"ai_flows(epoch) — AI-carried one-step flow edges (human excluded), raw resolution."
+ai_flows(epoch::Int) = flows_via(resolve_raw; epoch, only_ai=true)
 
 "reachable(edges, from) — transitive closure of the flow relation."
 function reachable(edges, from::Symbol)

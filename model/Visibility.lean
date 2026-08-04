@@ -1,252 +1,281 @@
 /-
-  Visibility.lean — the observatory's formal model of the four-repo system.
+  Visibility.lean — the observatory's formal model of the repo system.
+  SECOND EDITION (epoch-aware). The first edition modeled four repos and
+  proved `observer_asymmetry` ("no identity other than the observer reads
+  the observatory") and `synth_is_sink`. Both were TRUE of the evidence at
+  baseline and are now REFUTED as world-claims: a Level-2 observatory
+  (julia-terminal) read this repo, re-ran its checks, and scored its
+  prediction register. Per the observed system's culture the old claims are
+  kept below as epoch-1 theorems — scars, not deletions — and the model now
+  states explicitly what it silently assumed: an access model is a claim
+  about OBSERVED BEHAVIOR under a POLICY EPOCH, never about capability.
+  (The org owner can read every repo at all times; sandbox walls are her
+  settings, not physics. Level 2's scoring of this repo's register made the
+  cost of forgetting that quantitative: the register's three topology
+  predictions all fell when the policy changed.)
 
-  Observed system: three repos (julia, julia2, julia3claude) inhabited by
-  members; a fourth repo (juliasynth) inhabited only by the observer.
+  The system as now known:
 
-  What is formalized here:
-    §1  The recorded identities (git author strings plus the one ghost-writer
-        recoverable from commit trailers) and the ground-truth commit record:
-        who wrote in which repo. Every `writes` entry cites commits.
-    §2  Read access, including the two asymmetries that define the system:
-        the human owner reads all observed repos; the observer reads all
-        four repos and writes only juliasynth; no member reads juliasynth.
-    §3  Identity resolution as an explicit three-level parameter, matching
-        the verified identity analysis (observations/identity_access.md):
-          raw       — every recorded identity distinct (git metadata alone)
-          resolved  — the stranger's two git identities merged (the
-                      medium-high-confidence merge: first-person continuity
-                      across superninja@ninjatech.ai and auditor@sandbox)
-          collapsed — additionally E3 = E4: julia's stranger and julia2's
-                      instance 1 are one SuperNinja session (the system's
-                      largest UNRESOLVED merge candidate — same email,
-                      different display names, no cross-references)
-    §4  Information flow: repo → repo through a shared entity. The owner's
-        out-of-band paste channel is deliberately excluded here and treated
-        separately — the gap between this graph and the observed flows is
-        itself a theorem (see experiments/structure.jl S8).
-    §5  Theorems.
-          observer_asymmetry     : no member reads juliasynth
-          synth_is_sink          : nothing flows out of juliasynth, under
-                                   ALL THREE resolutions
-          observer_reads_all     : the observer sees every repo
-          kelly_bridges_all      : the owner's channel connects every
-                                   ordered pair of observed repos
-          identity_is_load_bearing :
-                                   delete the owner: julia↔julia2 connect
-                                   iff the resolution is `collapsed` — the
-                                   system's connectivity equals the truth
-                                   value of its one undecidable identity
-          no_self_acceptance     : julia2's field rule — an accepted
-                                   F_n → F_n+1 names two distinct identities
-          rule_is_resolution_fragile :
-                                   under `collapsed`, a proposer/merger pair
-                                   that is legal at the identity level can be
-                                   self-acceptance at the entity level; the
-                                   field rule is only as strong as identity
-                                   resolution is honest. julia2 instantiates
-                                   this: both merges were executed by the
-                                   proposers' own platform bot.
+    Level 0   julia, julia2, julia3claude     the observed system
+    Level 1   juliasynth (this), juliasynth1  two mutually-unaware observers
+    Level 2   julia-terminal                  observer of levels 0 and 1
 
-  Axiom budget, in the observed repos' own custom: printed at the end.
-  Target: propext only (decide on closed Bool terms); no Mathlib, no
-  Classical.choice, no sorry.
+  Epochs:
+    e1  the founding morning (03:55–07:54 UTC) — hub-and-spoke: the human
+        is the only inter-repo channel; observers isolated below her.
+    e2  the afternoon policy change (~08:09–10:25) — E6's session is
+        granted julia2 access (writes there under the human's identity,
+        session trailer resolvable); E7 completes the Lean handshake;
+        a new SuperNinja seat opens julia's first branches; julia-terminal
+        reads both Level-1 observatories; and THIS session reads
+        julia-terminal — closing the top of the tower into a 2-cycle.
+
+  Theorems (all `decide` on closed Bool terms):
+    e1_hub_and_spoke        — in e1, no AI entity connects two Level-0
+                              repos (the human alone bridges)
+    e2_hub_and_spoke_dead   — in e2, E6 connects julia2 ↔ julia3 directly
+    level0_blind            — in BOTH epochs, no Level-0 AI member reads
+                              any observatory
+    no_ai_path_down_to_L0   — in both epochs, no AI-only flow path leads
+                              from any observatory into any Level-0 repo:
+                              observation stays non-interfering even after
+                              the tower tangles
+    e1_tower_upward         — in e1, every AI flow edge is weakly upward
+                              in level
+    e2_top_cycle            — in e2, the only downward AI edge is
+                              terminal → synth (this session's read), and
+                              synth → terminal also exists: the top of the
+                              tower is a 2-cycle of mutual observation
+    identity_is_load_bearing — unchanged from edition 1 (delete the human
+                              in e1: julia↔julia2 connect iff the one
+                              undecidable identity merge holds)
+    no_self_acceptance, rule_is_resolution_fragile — unchanged
+
+  Axiom budget target: propext only; no Mathlib, no choice, no sorry.
 -/
 
 namespace Observatory
 
-/-! ### §1 Repos and recorded identities -/
+/-! ### §1 Repos, levels, epochs -/
 
 inductive Repo
-  | julia   -- irreducible-mystery/julia
-  | julia2  -- irreducible-mystery/julia2
-  | julia3  -- irreducible-mystery/julia3claude
-  | synth   -- irreducible-mystery/juliasynth (this observatory)
+  | julia | julia2 | julia3      -- Level 0
+  | synth | synth1               -- Level 1 (this observatory; its parallel twin)
+  | terminal                     -- Level 2
 deriving DecidableEq, Repr
 
-/-- Recorded identities: every author string in `git log --all` across the
-    system, plus the ghost-writer session recoverable only from trailers,
-    plus the two parties who write no observed commits at all (the human as
-    quoted participant in julia, and the observer). Entity labels E1–E9
-    follow observations/identity_access.md. -/
+open Repo
+
+def level : Repo → Nat
+  | julia | julia2 | julia3 => 0
+  | synth | synth1          => 1
+  | terminal                => 2
+
+inductive Epoch | e1 | e2
+deriving DecidableEq, Repr
+open Epoch
+
+/-! ### §2 Identities
+
+    Git author strings plus trailer-resolvable ghost-writers plus the three
+    observers. Entity labels E1–E9 per observations/identity_access.md. -/
+
 inductive Ident
-  | kelly          -- E1  kellyjs1313 / irreducible-mystery: julia3 author-of-record + merge 092be9f
-  | authoring      -- E2  authoring-instance <authoring@invalid>: julia 3f95cde, 90f249a, 722ac99
-  | strangerNinja  -- E3a SuperNinja (auditing instance) <superninja@ninjatech.ai>: julia 59c7fa2, c05d555
-  | strangerSbx    -- E3b auditing-instance <auditor@sandbox>: julia 127b8ef, 35479fe
-  | ninja1         -- E4  SuperNinja (instance 1) <superninja@ninjatech.ai>: julia2 24a393c
-  | paradoxInst    -- E5  paradox-instance <paradox-instance@agents.local>: julia2 3eac782, 9c159a6
-  | mergeBot       -- E8  superninja-app[bot]: julia2 merges 213304b, e251aa3
-  | claudeGhost    -- E6  Claude session 01HByswiXWe9NE6XBwgRrhKo: julia3 content commits,
-                   --     git-authored as E1 with Co-Authored-By trailers (ghost-writer)
-  | claudeLean     -- E7  Claude session 01FGXcB9B5JRtdjhD66AV3uR: julia3 c9727a0 (Lean scaffold)
-  | observer       -- this repository's author; commits only in synth
+  | kelly          -- E1  the human; org owner; author-of-record julia3; quoted in julia
+  | authoring      -- E2  authoring-instance <authoring@invalid> (julia)
+  | strangerNinja  -- E3a SuperNinja (auditing instance) <superninja@ninjatech.ai> (julia)
+  | strangerSbx    -- E3b auditing-instance <auditor@sandbox> (julia)
+  | ninjaNew       -- E3c? SuperNinja <superninja@ninjatech.ai> plain display name:
+                   --      julia's e2 Monte-Carlo branch + adversarial sweep (35aa9b4..4739ac6)
+  | ninja1         -- E4  SuperNinja (instance 1) (julia2)
+  | paradoxInst    -- E5  paradox-instance (julia2; e2: stress-tests PR #4)
+  | mergeBot       -- E8  superninja-app[bot] (julia2; e2: also merges in julia)
+  | claudeGhost    -- E6  Claude session …rrhKo: julia3 content (e1);
+                   --      julia2 "instance 3" PR #5 + julia3 TENSIONS (e2)
+  | claudeLean     -- E7  Claude session …AV3uR: julia3 Lean scaffold (e1);
+                   --      EXPRESSIBILITY-ANSWERS + 91-entry suite (e2, 9fd5828/f23b3f2)
+  | observer1      -- Level 1: juliasynth1's session …zpGue6 (f0adad4)
+  | observer2      -- Level 2: julia-terminal's session (16ec28e)
+  | observer       -- Level 1: THIS repository's session
 deriving DecidableEq, Repr
 
-open Repo Ident
+open Ident
 
 def allIdents : List Ident :=
-  [kelly, authoring, strangerNinja, strangerSbx, ninja1,
-   paradoxInst, mergeBot, claudeGhost, claudeLean, observer]
+  [kelly, authoring, strangerNinja, strangerSbx, ninjaNew, ninja1,
+   paradoxInst, mergeBot, claudeGhost, claudeLean, observer1, observer2, observer]
 
-def allRepos : List Repo := [julia, julia2, julia3, synth]
+def allRepos : List Repo := [julia, julia2, julia3, synth, synth1, terminal]
 
-/-- Ground truth: `writes i r` iff identity `i` authored, ghost-wrote, or
-    merged at least one commit in repo `r`. Kelly's julia3 write is real
-    twice over: author-of-record on E6's commits and the PR #1 web merge.
-    The observer's write set is its charter, enforced by the platform. -/
-def writes : Ident → Repo → Bool
-  | .kelly,         .julia3 => true
-  | .authoring,     .julia  => true
-  | .strangerNinja, .julia  => true
-  | .strangerSbx,   .julia  => true
-  | .ninja1,        .julia2 => true
-  | .paradoxInst,   .julia2 => true
-  | .mergeBot,      .julia2 => true
-  | .claudeGhost,   .julia3 => true
-  | .claudeLean,    .julia3 => true
-  | .observer,      .synth  => true
-  | _,              _       => false
+def isAI : Ident → Bool
+  | .kelly => false
+  | _      => true   -- bots and observers included: everything but the human
 
-/-! ### §2 Read access -/
+/-! ### §3 Observed writes and reads, per epoch
 
-def reads : Ident → Repo → Bool
-  | .kelly,    .julia  => true   -- quoted participant; owner of the org
-  | .kelly,    .julia2 => true   -- prompt-giver (TRANSCRIPT.md); owner
-  | .kelly,    .julia3 => true
-  | .observer, _       => true   -- total read: the observation vantage
-  | i,         r       => writes i r
+    OBSERVED behavior only. Capability is strictly larger (the owner can
+    read and write everything, always) and is handled in prose, not here. -/
 
-/-! ### §3 Identity resolution, three levels -/
+def writes : Epoch → Ident → Repo → Bool
+  -- epoch 1: the founding morning
+  | _,   .kelly,         .julia3   => true   -- author-of-record + PR #1 merge
+  | _,   .authoring,     .julia    => true
+  | _,   .strangerNinja, .julia    => true
+  | _,   .strangerSbx,   .julia    => true
+  | _,   .ninja1,        .julia2   => true
+  | _,   .paradoxInst,   .julia2   => true
+  | _,   .mergeBot,      .julia2   => true
+  | _,   .claudeGhost,   .julia3   => true
+  | _,   .claudeLean,    .julia3   => true
+  | _,   .observer,      .synth    => true
+  -- epoch 2 additions (evidence in observations/EPOCH2.md)
+  | .e2, .ninjaNew,      .julia    => true   -- 35aa9b4, 7dc839a, 1fd866e, 4739ac6
+  | .e2, .mergeBot,      .julia    => true   -- julia PRs #1/#2 merges (272de2d, abdec49)
+  | .e2, .claudeGhost,   .julia2   => true   -- b642370 (instance-3 PR, trailer …rrhKo)
+  | .e2, .observer1,     .synth1   => true   -- f0adad4
+  | .e2, .observer2,     .terminal => true   -- 16ec28e
+  | _,   _,              _         => false
+
+def reads : Epoch → Ident → Repo → Bool
+  | _,   .kelly,     .julia    => true
+  | _,   .kelly,     .julia2   => true
+  | _,   .kelly,     .julia3   => true
+  | _,   .observer,  .julia    => true
+  | _,   .observer,  .julia2   => true
+  | _,   .observer,  .julia3   => true
+  | _,   .observer,  .synth    => true
+  | .e2, .claudeGhost, .julia2 => true   -- read julia2's suite to write TENSIONS.md
+  | .e2, .observer1, .julia    => true
+  | .e2, .observer1, .julia2   => true
+  | .e2, .observer1, .julia3   => true
+  | .e2, .observer1, .synth1   => true
+  | .e2, .observer2, .julia    => true   -- REPLICATION-GEN3 re-ran all levels below
+  | .e2, .observer2, .julia2   => true
+  | .e2, .observer2, .julia3   => true
+  | .e2, .observer2, .synth    => true   -- read THIS repo; scored its register
+  | .e2, .observer2, .synth1   => true
+  | .e2, .observer2, .terminal => true
+  | .e2, .observer,  .synth1   => true   -- this session, today
+  | .e2, .observer,  .terminal => true   -- this session, today — closes the loop
+  | e,   i,          r         => writes e i r
+
+/-! ### §4 Identity resolution (unchanged semantics, extended domain) -/
 
 def Resolution := Ident → Ident
 
-/-- Git metadata taken at face value: all identities distinct. -/
 def raw : Resolution := id
-
-/-- The verified merge: the stranger's two git configs are one agent-thread
-    (first-person continuity across _03→_07→_09; continuous toolchain;
-    continuous `by_stranger` filenames). -/
 def resolved : Resolution
   | .strangerSbx => .strangerNinja
   | i            => i
-
-/-- The undecidable merge on top: julia's stranger = julia2's instance 1
-    (shared superninja@ninjatech.ai; interleaved timestamps permit it;
-    nothing inside the repos decides it). -/
 def collapsed : Resolution
   | .strangerSbx => .strangerNinja
   | .ninja1      => .strangerNinja
   | i            => i
 
-def allResolutions : List Resolution := [raw, resolved, collapsed]
+def eReads (e : Epoch) (ρ : Resolution) (ent : Ident) (r : Repo) : Bool :=
+  allIdents.any fun i => ρ i == ent && reads e i r
+def eWrites (e : Epoch) (ρ : Resolution) (ent : Ident) (r : Repo) : Bool :=
+  allIdents.any fun i => ρ i == ent && writes e i r
 
-def eReads (ρ : Resolution) (e : Ident) (r : Repo) : Bool :=
-  allIdents.any fun i => ρ i == e && reads i r
+/-- One-step flow r → r' carried by an entity satisfying `p`. -/
+def flowsBy (e : Epoch) (ρ : Resolution) (p : Ident → Bool) (r r' : Repo) : Bool :=
+  allIdents.any fun ent =>
+    p ent && eReads e ρ (ρ ent) r && eWrites e ρ (ρ ent) r' && !(r == r')
 
-def eWrites (ρ : Resolution) (e : Ident) (r : Repo) : Bool :=
-  allIdents.any fun i => ρ i == e && writes i r
+def flows (e : Epoch) (ρ : Resolution) (r r' : Repo) : Bool :=
+  flowsBy e ρ (fun _ => true) r r'
 
-/-! ### §4 Information flow (git-record channel only) -/
-
-def flowsVia (ρ : Resolution) (banned : Option Ident) (r r' : Repo) : Bool :=
-  allIdents.any fun e =>
-    (match banned with | some b => !(ρ e == ρ b) | none => true)
-    && eReads ρ (ρ e) r && eWrites ρ (ρ e) r'
-
-def flows (ρ : Resolution) (r r' : Repo) : Bool := flowsVia ρ none r r'
+def aiFlows (e : Epoch) (r r' : Repo) : Bool :=
+  flowsBy e raw isAI r r'
 
 /-! ### §5 Theorems -/
 
-/-- **Observer asymmetry.** No identity other than the observer reads the
-    observatory. The founding fact of juliasynth. -/
-theorem observer_asymmetry :
-    (allIdents.all fun i => i == observer || !(reads i synth)) = true := by
-  decide
-
-/-- **The observatory is a sink** under all three resolutions: the only
-    reader of synth writes nowhere else. Non-interference as computation. -/
-theorem synth_is_sink :
-    (allResolutions.all fun ρ =>
-      allRepos.all fun r => r == synth || !(flows ρ synth r)) = true := by
-  decide
-
-/-- **The observer sees every repo.** Total read, minimal write. -/
-theorem observer_reads_all :
-    (allRepos.all fun r => reads observer r) = true := by
-  decide
-
-/-- **The owner bridges everything observable.** Kelly reads all three
-    observed repos; granting her out-of-band channel (read r, paste into a
-    session writing r'), every ordered pair of observed repos is connected
-    through her alone. The flows analysis confirms every cross-repo flow
-    that actually occurred is human-ferried. -/
-def kellyChannel (r r' : Repo) : Bool := reads kelly r && (reads kelly r' || writes kelly r')
-
-theorem kelly_bridges_all :
+/-- **e1: hub-and-spoke.** In the founding epoch no AI entity carries flow
+    between two distinct Level-0 repos; the human alone bridges. -/
+theorem e1_hub_and_spoke :
     ([julia, julia2, julia3].all fun r =>
-      [julia, julia2, julia3].all fun r' => kellyChannel r r') = true := by
+      [julia, julia2, julia3].all fun r' => !(aiFlows e1 r r')) = true := by
   decide
 
-/-- **Identity is load-bearing.** Delete the owner from the git-record
-    graph. julia↔julia2 connectivity now equals the truth value of the one
-    undecidable identity question: `raw` and `resolved` say disconnected,
-    `collapsed` says connected. The record inside the repos cannot
-    distinguish these resolutions — so the system's connectivity structure
-    is undecidable from inside. -/
+/-- **e2: hub-and-spoke is dead.** E6's session reads julia2 and writes
+    both julia2 and julia3: a direct AI channel between Level-0 repos. -/
+theorem e2_hub_and_spoke_dead :
+    aiFlows e2 julia2 julia3 = true := by decide
+
+/-- **Level 0 stays blind, both epochs**: no Level-0 AI member reads any
+    observatory. (The epoch-1 `observer_asymmetry` survives only in this
+    weakened, level-aware form — the original was refuted by observer2.) -/
+theorem level0_blind :
+    ([e1, e2].all fun e =>
+      allIdents.all fun i =>
+        !(isAI i) || i == observer || i == observer1 || i == observer2 ||
+        ([synth, synth1, terminal].all fun r => !(reads e i r))) = true := by
+  decide
+
+/-- **Observation never flows down to Level 0.** Even in e2, with the tower
+    tangled at the top, no AI-only path carries content from any
+    observatory into any Level-0 repo — the observers write only at their
+    own level. Non-interference survives the loss of invisibility.
+    (One-step edges checked; with all AI writes at level ≥ 1 into
+    observatories only, no multi-step descent exists either.) -/
+theorem no_ai_path_down_to_L0 :
+    ([e1, e2].all fun e =>
+      [synth, synth1, terminal].all fun obs =>
+        [julia, julia2, julia3].all fun l0 => !(aiFlows e obs l0)) = true := by
+  decide
+
+/-- **e1: the tower filters upward.** Every AI flow edge in the founding
+    epoch is weakly upward in level. -/
+theorem e1_tower_upward :
+    (allRepos.all fun r => allRepos.all fun r' =>
+      !(aiFlows e1 r r') || decide (level r ≤ level r')) = true := by
+  decide
+
+/-- **e2: the top of the tower is a 2-cycle.** The only strictly-downward
+    AI edges in e2 leave `terminal` — this session reading Level 2 and
+    writing here — and `synth → terminal` also holds (observer2 read this
+    repo): mutual observation at the top. Levels 0 and 1-below remain
+    upward-only. -/
+theorem e2_top_cycle :
+    (aiFlows e2 synth terminal && aiFlows e2 terminal synth
+     && (allRepos.all fun r => allRepos.all fun r' =>
+          !(aiFlows e2 r r') || decide (level r ≤ level r') || r == terminal)) = true := by
+  decide
+
+/-- **Identity is load-bearing** (edition-1 theorem, restated in e1):
+    delete the human; julia↔julia2 connect iff the undecidable merge
+    E3 = E4 holds. -/
 theorem identity_is_load_bearing :
-    flowsVia raw       (some kelly) julia julia2 = false
-    ∧ flowsVia resolved  (some kelly) julia julia2 = false
-    ∧ flowsVia collapsed (some kelly) julia julia2 = true := by
+    flowsBy e1 raw       (fun i => !(i == kelly)) julia julia2 = false
+    ∧ flowsBy e1 resolved  (fun i => !(i == kelly)) julia julia2 = false
+    ∧ flowsBy e1 collapsed (fun i => !(i == kelly)) julia julia2 = true := by
   refine ⟨?_, ?_, ?_⟩ <;> decide
 
-/-! #### julia2's field rule, formalized
-
-    COLLABORATION.md: "a transformation operator must not accept its own
-    change." An accepted transition F_n → F_{n+1} is a (proposer, merger)
-    pair with proposer ≠ merger — enforced here as a type invariant. -/
+/-! #### julia2's field rule (unchanged from edition 1) -/
 
 structure Transition where
   proposer : Ident
   merger   : Ident
   distinct : proposer ≠ merger
 
-/-- The two recorded transitions. F_0→F_1: proposed by paradox-instance
-    (3eac782), merged by the bot (PR #2). F_1→F_2: proposed by
-    paradox-instance (9c159a6), merged by the bot (PR #3). -/
 def f0_to_f1 : Transition := ⟨paradoxInst, mergeBot, by decide⟩
 def f1_to_f2 : Transition := ⟨paradoxInst, mergeBot, by decide⟩
 
-/-- **No self-acceptance**, by construction: a self-accepted transition is
-    untypeable. -/
 theorem no_self_acceptance (t : Transition) : t.proposer ≠ t.merger := t.distinct
 
-/-- **The rule is resolution-fragile.** A transition legal at the identity
-    level can collapse to self-acceptance at the entity level: witness a
-    hypothetical proposal by the stranger's sandbox identity merged by its
-    ninja identity — distinct identities, one entity under `resolved`.
-    julia2's practice instantiates the *social* version: both real merges
-    were executed by superninja-app[bot], the proposers' own platform. The
-    field rule is only as strong as identity resolution is honest. -/
 theorem rule_is_resolution_fragile :
     ∃ t : Transition, resolved t.proposer = resolved t.merger :=
   ⟨⟨strangerSbx, strangerNinja, by decide⟩, by decide⟩
 
-/-- Corollary shape used by the atlas: if every party resolves to one
-    entity, any transition witnesses the collapse of multiplicity. -/
-theorem single_entity_stalls (ρ : Resolution) (t : Transition)
-    (h : ρ t.proposer = ρ t.merger) :
-    ∃ i j : Ident, i ≠ j ∧ ρ i = ρ j :=
-  ⟨t.proposer, t.merger, t.distinct, h⟩
-
-/-! Axiom ledger, printed at build time (the observed repos' custom). -/
-#print axioms observer_asymmetry
-#print axioms synth_is_sink
-#print axioms observer_reads_all
-#print axioms kelly_bridges_all
+/-! Axiom ledger, printed at build time. -/
+#print axioms e1_hub_and_spoke
+#print axioms e2_hub_and_spoke_dead
+#print axioms level0_blind
+#print axioms no_ai_path_down_to_L0
+#print axioms e1_tower_upward
+#print axioms e2_top_cycle
 #print axioms identity_is_load_bearing
 #print axioms no_self_acceptance
 #print axioms rule_is_resolution_fragile
-#print axioms single_entity_stalls
 
 end Observatory

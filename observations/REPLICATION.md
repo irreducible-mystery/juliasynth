@@ -45,3 +45,20 @@ real: the ledger's honesty extends to its own temptations.
 Verdict: within its evidentiary horizon, the observed system's executable
 claims are sound under fully external replication. The prose can be argued
 with; the exit codes cannot.
+
+
+---
+
+## ERRATUM (2026-08-04, epoch 2 — kept per scars culture)
+
+This report's "24/24 claims replicate" and its closing line ("the exit codes
+cannot [be argued with]") over-claimed. The adversarial sweep that landed in
+julia at 09:59 (`audits/ADVERSARIAL-SWEEP-NOTES.md`, finding F2) proved that
+`emergence_00` and `_01` have **no failure channel** — they exit 0 on any
+output, so their rows above verify only that the files run, not that any
+claim held. The same caveat applies in part to `_02` (its central claim was
+computed, printed, and never asserted). This observatory replicated the exit
+codes faithfully and did not check which exit codes were *falsifiable* — the
+same category of instrument-blindness the observed system keeps confessing.
+A correct summary row: 24/24 runs reproduce; 21/24 of those runs were
+capable of failing. The verdict paragraph stands for the 21.
