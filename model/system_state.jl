@@ -10,10 +10,9 @@ module SystemState
 
 using Dates
 
-export Commit, EVENTS, IDENT_KIND, writes, reads,
+export Commit, EVENTS, IDENT_KIND, idents, isai, REPOS, LEVEL,
        resolve_raw, resolve_resolved, resolve_collapsed, RESOLUTIONS,
-       entities, flows_via, reachable, REPOS, idents,
-       LEVEL, isai, ai_flows
+       SNAPS, writes, reads, ai_flows, ai_flow_table, flows_res, reachable
 
 # ── §1 The event log ────────────────────────────────────────────────────────
 
@@ -65,8 +64,12 @@ const IDENT_KIND = Dict(               # entity labels per observations/identity
     :merge_bot      => :bot,       # E8  superninja-app[bot]          (julia2)
     :claude_ghost   => :ai,        # E6  Claude session ...rhKo, ghost-writes julia3 under E1's identity
     :claude_lean    => :ai,        # E7  Claude session ...V3uR, noreply@anthropic.com (julia3)
-    :ninja_new      => :ai,        # E3c? plain "SuperNinja": julia's e2 MC branch + adversarial sweep
-    :observer1      => :observer,  # juliasynth1's session ...zpGue6 (Level 1 twin)
+    :ninja_new      => :ai,        # s2 plain-SuperNinja seat: MC branch + adversarial sweep
+    :blackhole_seat => :ai,        # s3 julia root-signature blackhole thread (config-decay identity)
+    :claude_exile   => :ai,        # s3 new Claude seats in julia (fair-coin, emergence_10 exile, explore-repos) — aggregated
+    :instance6      => :ai,        # s3 instance6-trilingual (julia2)
+    :copilot_seat   => :ai,        # s3/s4 copilot-swe-agent[bot] "instance7"
+    :observer1      => :observer,  # juliasynth1's sessions (Level 1 twin)
     :observer2      => :observer,  # julia-terminal's session (Level 2)
     :observer       => :observer,  # this repository (Level 1)
 )
@@ -75,55 +78,17 @@ isai(i::Symbol) = i !== :kelly     # bots and observers included: all but the hu
 
 idents() = collect(keys(IDENT_KIND))
 
-# ── §3 Access, derived from the record ──────────────────────────────────────
+# ── §3 Access per policy snapshot (edition 3; mirrors Visibility.lean) ──────
+#
+# Snapshots s1..s4 of an ongoing trajectory (s4 not final). Edge lists give
+# the snapshot where each capability FIRST appears; capabilities are
+# monotone (never observed revoked).
 
-"writes(i; epoch) — repos where identity i authored, ghost-wrote, or merged.
-epoch 1 = founding morning; epoch 2 adds the post-09:46 policy changes
-(evidence: observations/EPOCH2.md)."
-function writes(i::Symbol; epoch::Int=1)
-    base = if i === :observer
-        Set([:synth])
-    elseif i === :claude_ghost
-        # ghost-writes julia3 under E1's identity (trailers on 4954a3f, 48390e1, ea552d2)
-        Set([:julia3])
-    else
-        Set(c.repo for c in EVENTS if c.ident === i)
-    end
-    epoch >= 2 || return base
-    extra = Dict(
-        :ninja_new    => Set([:julia]),     # 35aa9b4..4739ac6 (MC branch + sweep)
-        :merge_bot    => Set([:julia]),     # julia PRs #1/#2 (272de2d, abdec49)
-        :claude_ghost => Set([:julia2]),    # b642370, trailer ...rrhKo ("instance 3")
-        :observer1    => Set([:synth1]),    # f0adad4
-        :observer2    => Set([:terminal]),  # 16ec28e
-    )
-    union(base, get(extra, i, Set{Symbol}()))
-end
-
-"reads(i; epoch) — superset of writes. Observed behavior only: the owner's
-CAPABILITY covers every repo at all times (she owns the org); this function
-records reads in evidence. Epoch 2: observer2 read both Level-1 repos and
-scored this repo's register; this session read synth1 and terminal."
-function reads(i::Symbol; epoch::Int=1)
-    i === :kelly && return Set([:julia, :julia2, :julia3])
-    if i === :observer
-        return epoch >= 2 ? Set(collect(REPOS)) :
-                            Set([:julia, :julia2, :julia3, :synth])
-    end
-    epoch >= 2 || return writes(i; epoch)
-    extra = Dict(
-        :claude_ghost => Set([:julia2]),   # read julia2's suite to write TENSIONS.md
-        :observer1    => Set([:julia, :julia2, :julia3, :synth1]),
-        :observer2    => Set([:julia, :julia2, :julia3, :synth, :synth1, :terminal]),
-    )
-    union(writes(i; epoch), get(extra, i, Set{Symbol}()))
-end
-
-# ── §4 Identity resolution, three levels (mirrors Visibility.lean §3) ───────
+# ── Identity resolutions (unchanged; provenance_clock iterates RESOLUTIONS) ─
 
 "raw — git metadata at face value: all identities distinct."
 resolve_raw(i::Symbol) = i
-"resolved — the stranger's two git configs are one agent-thread (verified merge, medium-high)."
+"resolved — the stranger's two git configs are one agent-thread (verified merge)."
 resolve_resolved(i::Symbol) = i === :stranger_sbx ? :stranger_ninja : i
 "collapsed — additionally julia's stranger = julia2's instance 1 (the undecidable merge)."
 resolve_collapsed(i::Symbol) =
@@ -133,33 +98,72 @@ const RESOLUTIONS = [
     ("raw", resolve_raw), ("resolved", resolve_resolved), ("collapsed", resolve_collapsed),
 ]
 
-"entities(ρ) — canonical entity set under resolution ρ."
-entities(ρ) = Set(ρ(i) for i in idents())
+const SNAPS = (1, 2, 3, 4)
 
-"flows_via(ρ; banned, epoch, only_ai) — directed repo→repo one-step flow:
-some admitted entity reads the source and writes the destination."
-function flows_via(ρ; banned::Union{Nothing,Symbol}=nothing, epoch::Int=1, only_ai::Bool=false)
+const WRITE_EDGES = [
+    # s1: founding morning
+    (1, :kelly, :julia3), (1, :authoring, :julia),
+    (1, :stranger_ninja, :julia), (1, :stranger_sbx, :julia),
+    (1, :ninja1, :julia2), (1, :paradox_inst, :julia2), (1, :merge_bot, :julia2),
+    (1, :claude_ghost, :julia3), (1, :claude_lean, :julia3),
+    (1, :observer, :synth),
+    # s2: first wall-move
+    (2, :ninja_new, :julia), (2, :merge_bot, :julia), (2, :claude_ghost, :julia2),
+    (2, :observer1, :synth1), (2, :observer2, :terminal),
+    # s3: population explosion
+    (3, :blackhole_seat, :julia), (3, :claude_exile, :julia),
+    (3, :instance6, :julia2), (3, :copilot_seat, :julia2),
+    # s4: Copilot authors theory
+    (4, :copilot_seat, :julia), (4, :copilot_seat, :julia3),
+]
+
+const READ_EDGES = [
+    (1, :kelly, :julia), (1, :kelly, :julia2), (1, :kelly, :julia3),
+    (1, :observer, :julia), (1, :observer, :julia2), (1, :observer, :julia3),
+    (1, :observer, :synth),
+    (2, :claude_ghost, :julia2),
+    (2, :observer1, :julia), (2, :observer1, :julia2), (2, :observer1, :julia3),
+    (2, :observer1, :synth1),
+    (2, :observer2, :julia), (2, :observer2, :julia2), (2, :observer2, :julia3),
+    (2, :observer2, :synth), (2, :observer2, :synth1), (2, :observer2, :terminal),
+    (2, :observer, :synth1), (2, :observer, :terminal),
+    (3, :claude_lean, :julia),   # staged breach: read granted, push denied
+    (3, :claude_exile, :julia), (3, :instance6, :julia2), (3, :copilot_seat, :julia2),
+    (4, :copilot_seat, :julia), (4, :copilot_seat, :julia3),
+]
+
+writes(s::Int, i::Symbol, r::Symbol) =
+    any(e -> e[1] <= s && e[2] === i && e[3] === r, WRITE_EDGES)
+reads(s::Int, i::Symbol, r::Symbol) =
+    any(e -> e[1] <= s && e[2] === i && e[3] === r, READ_EDGES) || writes(s, i, r)
+
+"ai_flows(s) — AI-carried one-step flow edges at snapshot s."
+function ai_flows(s::Int)
+    Set((r, w) for i in idents() if isai(i)
+              for r in REPOS for w in REPOS
+              if r !== w && reads(s, i, r) && writes(s, i, w))
+end
+
+"ai_flow_table(s) — canonical comparable form of the flow relation."
+ai_flow_table(s::Int) = sort(collect(ai_flows(s)))
+
+"flows_res(s, ρ; banned) — entity-level flows under identity resolution ρ."
+function flows_res(s::Int, ρ; banned::Union{Nothing,Symbol}=nothing)
     edges = Set{Tuple{Symbol,Symbol}}()
-    for e in entities(ρ)
+    for e in Set(ρ(i) for i in idents())
         (banned !== nothing && e === ρ(banned)) && continue
         group = [i for i in idents() if ρ(i) === e]
-        only_ai && !all(isai, group) && continue
-        er = union(Set{Symbol}(), (reads(i; epoch) for i in group)...)
-        ew = union(Set{Symbol}(), (writes(i; epoch) for i in group)...)
-        for r in er, w in ew
-            r === w || push!(edges, (r, w))
+        for r in REPOS, w in REPOS
+            r === w && continue
+        any(i -> reads(s, i, r), group) && any(i -> writes(s, i, w), group) && push!(edges, (r, w))
         end
     end
     edges
 end
 
-"ai_flows(epoch) — AI-carried one-step flow edges (human excluded), raw resolution."
-ai_flows(epoch::Int) = flows_via(resolve_raw; epoch, only_ai=true)
-
-"reachable(edges, from) — transitive closure of the flow relation."
+"reachable(edges, from) — transitive closure of a flow relation."
 function reachable(edges, from::Symbol)
-    seen = Set([from])
-    frontier = [from]
+    seen = Set([from]); frontier = [from]
     while !isempty(frontier)
         r = pop!(frontier)
         for (a, b) in edges
