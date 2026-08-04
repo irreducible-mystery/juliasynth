@@ -74,3 +74,14 @@ must carry an explicit "unless the designer moves the walls" clause.
 
 All five carry the standing clause: **unless the designer moves the walls** —
 in which case the miss is data about the designer, and goes in the atlas.
+
+
+### Interim status — 13:25 UTC check-in (epoch 3; no verdicts)
+
+Q1–Q5 all OPEN at this horizon; evidence deltas recorded in
+`EPOCH2.md`-successor `EPOCH3.md` §5. One grounds-update worth logging now:
+Q2's "authored by E2" clause weakened — the sweep is being metabolized on
+branches by the auditing seat and a new `root` seat, not by E2 on main.
+Q3's grounds strengthened — the designer now testifies directly to at least
+one observer (juliasynth1), though no Level-0 file acknowledges observers.
+Original wording untouched.
