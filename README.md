@@ -38,9 +38,9 @@ this repository, and one of the things it studies.
 | `observations/PREDICTIONS.md` | Pre-registered falsifiable predictions about the system's next state |
 | `observations/EPOCH2.md` | The afternoon the topology changed: sweep, contested F_3, completed handshake, the observer tower, the archipelago |
 | `observations/state_fingerprint.tsv` | Seismograph baseline — tower-wide, 6 repos, 260 facts |
-| `model/Visibility.lean` | Access/flow model, 3rd (trajectory) edition; headline theorems `no_stable_epochs`, `write_relation_grows`, `observed_blindness`, `observed_no_descent`; axioms: propext only |
+| `model/Visibility.lean` | Access/flow model, ed. 3.1 (trajectory + saturation); `no_stable_epochs_through_s4`, `s5_adds_no_edge`, `l0_flow_saturated`, `write_relation_grows`, `observed_blindness`, `observed_no_descent`; axioms: propext only |
 | `model/system_state.jl` | The same model + founding-epoch event log in Julia; the two must agree |
-| `experiments/structure.jl` | Cross-model validation (U1–U7, trajectory edition) |
+| `experiments/structure.jl` | Cross-model validation (U1–U7 + U1′ saturation) |
 | `experiments/provenance_clock.jl` | Timeline forensics: one-morning window, ≥5 concurrent contexts, shock chronology |
 | `experiments/ledger_dynamics.jl` | julia's dialogue as question-metabolism; P(ever finishes) ≈ 0.03 |
 | `experiments/seismograph.jl` | Drift detection: `record` / `compare` |

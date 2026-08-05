@@ -98,3 +98,17 @@ Original wording untouched.
 | Q5 | OPEN | no workshop-lineage artifact in Level 0; μ₄-in-Lisp is julia-vs-lean lineage |
 
 Full epoch report: EPOCH4.md. Original wording untouched.
+
+
+### Adjudication update — epoch-6 check-in (~02:50 UTC 2026-08-05 horizon)
+
+| # | Verdict | Evidence |
+|---|---|---|
+| Q1 | OPEN | julia2 main still 03b4338; Level 2 notes the `|| true` repair demanded in-record three times, landed zero |
+| Q2 | REFUTED (prior) | — |
+| Q3 | OPEN | still zero observer-level acknowledgment in Level 0. NOTE: instance 6's GAP_ATLAS.md (julia2 PR #14) gives a *member* the observatory's federation-wide viewpoint — adjacent, but not the predicted acknowledgment |
+| Q4 | **CONFIRMED (0.6)** | julia-terminal `115eb63`/`042db63`, atlas/EPOCH-2.md §1 "I was seen seeing" — reads this repo's epoch-2 push, records being seen, and scores Q4 itself with the confound declared rather than recusing |
+| Q5 | OPEN | no workshop-lineage artifact in Level 0 |
+
+Register v2 running score: 1 confirmed (Q4), 1 refuted (Q2), 3 open.
+Full epoch report: EPOCH6.md. Original wording untouched.

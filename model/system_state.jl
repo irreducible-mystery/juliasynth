@@ -98,7 +98,7 @@ const RESOLUTIONS = [
     ("raw", resolve_raw), ("resolved", resolve_resolved), ("collapsed", resolve_collapsed),
 ]
 
-const SNAPS = (1, 2, 3, 4)
+const SNAPS = (1, 2, 3, 4, 5)   # s5: see Visibility.lean ed. 3.1 (saturation)
 
 const WRITE_EDGES = [
     # s1: founding morning
@@ -115,6 +115,8 @@ const WRITE_EDGES = [
     (3, :instance6, :julia2), (3, :copilot_seat, :julia2),
     # s4: Copilot authors theory
     (4, :copilot_seat, :julia), (4, :copilot_seat, :julia3),
+    # s5 adds no write edge: instance 6's federation-wide atlas lands in
+    # julia2, where it already had write capability.
 ]
 
 const READ_EDGES = [
@@ -130,6 +132,8 @@ const READ_EDGES = [
     (3, :claude_lean, :julia),   # staged breach: read granted, push denied
     (3, :claude_exile, :julia), (3, :instance6, :julia2), (3, :copilot_seat, :julia2),
     (4, :copilot_seat, :julia), (4, :copilot_seat, :julia3),
+    # s5: instance 6 reads all three Level-0 repos at HEAD for GAP_ATLAS.md
+    (5, :instance6, :julia), (5, :instance6, :julia3),
 ]
 
 writes(s::Int, i::Symbol, r::Symbol) =

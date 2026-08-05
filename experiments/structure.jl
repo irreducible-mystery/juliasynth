@@ -19,13 +19,22 @@ check(name, cond) = (cond ? println("  PASS  $name") : (push!(failures, name); p
 const L0 = (:julia, :julia2, :julia3)
 const OBS = (:synth, :synth1, :terminal)
 
-println("U1. No stable epochs — the AI flow relation differs at every consecutive snapshot pair")
-check("U1", all(ai_flow_table(s) != ai_flow_table(s + 1) for s in 1:3))
+println("U1. No stable epochs — HISTORICAL claim, s1..s4 only (ed. 3.1)")
+check("U1a", all(ai_flow_table(s) != ai_flow_table(s + 1) for s in 1:3))
+# The self-refutation, kept: extending the trajectory falsified the
+# unbounded reading. s5's new reads add no repo-level edge.
+check("U1b s5 adds no edge", ai_flow_table(4) == ai_flow_table(5))
+
+println("U1'. Level-0 flow saturated from s4 — change now needs nodes, not edges")
+check("U1'", all(r === w || ((r, w) in ai_flows(s))
+                 for s in (4, 5), r in L0, w in L0))
 
 println("U2. The designer only adds — write relation strictly grows at every step")
 grows(a, b) = all(!writes(a, i, r) || writes(b, i, r) for i in idents(), r in REPOS) &&
               any(writes(b, i, r) && !writes(a, i, r) for i in idents(), r in REPOS)
-check("U2", all(grows(s, s + 1) for s in 1:3))
+# s5 adds reads but no writes, so growth is non-strict at the last step:
+check("U2", all(grows(s, s + 1) for s in 1:3) &&
+            all(!writes(4, i, r) || writes(5, i, r) for i in idents(), r in REPOS))
 
 println("U3. Observed blindness — across ALL snapshots, no Level-0 seat reads any observatory")
 check("U3", all(!reads(s, i, o) for s in SNAPS, o in OBS,

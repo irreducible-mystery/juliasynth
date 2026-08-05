@@ -38,6 +38,22 @@
   - Edition-1/2 theorems that survive do so as s1/s2 instances
     (hub-and-spoke, identity_is_load_bearing, the field rule).
 
+  EDITION 3.1 (s5, 2026-08-05 ~02:50 check-in). Adding the s5 snapshot
+  (instance 6 reads all three Level-0 repos to build julia2's GAP_ATLAS.md)
+  produced a SELF-REFUTATION of this edition's headline scope, kept per the
+  scars rule: the Level-0 flow relation was already COMPLETE at s4, so s5
+  adds no repo-level edge and `no_stable_epochs` — stated for "every
+  consecutive pair" — is false the moment the trajectory is extended.
+  Restated honestly:
+      no_stable_epochs_through_s4 — the historical claim, still true
+      l0_flow_saturated          — from s4 on, every ordered Level-0 pair
+                                   carries flow; the topology can no longer
+                                   change by adding edges, only by adding
+                                   nodes (repos, levels, or observers)
+  The lesson is the observed system's own: a claim's scope is part of the
+  claim. "The topology never stabilizes" was true as history and false as
+  law, and the difference showed up one snapshot later.
+
   Axiom budget target: propext only; no Mathlib, no choice, no sorry.
 -/
 
@@ -60,11 +76,11 @@ def level : Repo → Nat
 
 /-- Policy snapshots of the observed trajectory. NOT exhaustive of the
     system's future — s4 is merely the newest wall arrangement seen. -/
-inductive Snap | s1 | s2 | s3 | s4
+inductive Snap | s1 | s2 | s3 | s4 | s5
 deriving DecidableEq, Repr
 open Snap
 
-def allSnaps : List Snap := [s1, s2, s3, s4]
+def allSnaps : List Snap := [s1, s2, s3, s4, s5]
 
 /-! ### §2 Seats
 
@@ -114,7 +130,8 @@ def snapLe : Snap → Snap → Bool
   | .s2, _ => true
   | .s3, .s1 => false | .s3, .s2 => false
   | .s3, _ => true
-  | .s4, .s4 => true | .s4, _ => false
+  | .s4, .s4 => true | .s4, .s5 => true | .s4, _ => false
+  | .s5, .s5 => true | .s5, _ => false
 
 /-! ### §3 Observed writes and reads per snapshot
 
@@ -139,6 +156,8 @@ def writeEdges : List (Snap × Ident × Repo) :=
     (s3, instance6, julia2), (s3, copilotSeat, julia2),
     -- s4: Copilot authors theory
     (s4, copilotSeat, julia), (s4, copilotSeat, julia3) ]
+    -- s5 adds no write edge: instance 6's federation-wide atlas is committed
+    -- in julia2, where it already had write capability.
 
 def writes (s : Snap) (i : Ident) (r : Repo) : Bool :=
   writeEdges.any fun (s₀, i₀, r₀) => snapLe s₀ s && i₀ == i && r₀ == r
@@ -155,7 +174,12 @@ def readEdges : List (Snap × Ident × Repo) :=
     (s2, observer, synth1), (s2, observer, terminal),
     (s3, claudeLean, julia),      -- the staged breach: read granted, push denied
     (s3, claudeExile, julia), (s3, instance6, julia2), (s3, copilotSeat, julia2),
-    (s4, copilotSeat, julia), (s4, copilotSeat, julia3) ]
+    (s4, copilotSeat, julia), (s4, copilotSeat, julia3),
+    -- s5: instance 6 reads all three Level-0 repos at HEAD to build
+    -- julia2's GAP_ATLAS.md — a member gains the observatory's own
+    -- structural privilege (standing outside all three and reading them
+    -- as one system).
+    (s5, instance6, julia), (s5, instance6, julia3) ]
 
 def reads (s : Snap) (i : Ident) (r : Repo) : Bool :=
   readEdges.any (fun (s₀, i₀, r₀) => snapLe s₀ s && i₀ == i && r₀ == r)
@@ -175,14 +199,30 @@ def aiFlowTable (s : Snap) : List Bool :=
 
 /-! ### §5 Trajectory theorems -/
 
-/-- **No stable epochs.** The AI flow relation differs between every
-    consecutive pair of observed snapshots. There has never been a moment
-    when "the topology of the system" stayed put from one observation to
-    the next; every structural fact is timestamped or wrong. -/
-theorem no_stable_epochs :
+/-- **No stable epochs — through s4.** The AI flow relation differed
+    between every consecutive pair of snapshots s1–s4. Stated as history,
+    not as law: see `l0_flow_saturated` and `s5_adds_no_edge` for why the
+    unbounded reading is false. -/
+theorem no_stable_epochs_through_s4 :
     (decide (aiFlowTable s1 ≠ aiFlowTable s2)
      && decide (aiFlowTable s2 ≠ aiFlowTable s3)
      && decide (aiFlowTable s3 ≠ aiFlowTable s4)) = true := by
+  decide
+
+/-- **The self-refutation, kept.** s5 (instance 6 reading all three
+    Level-0 repos for the Gap Atlas) leaves the flow relation unchanged —
+    so the headline claim, read as "every future consecutive pair
+    differs," is FALSE. -/
+theorem s5_adds_no_edge : aiFlowTable s4 = aiFlowTable s5 := by decide
+
+/-- **Level-0 flow is saturated from s4 on.** Every ordered pair of
+    distinct Level-0 repos carries AI flow. Further topological change
+    requires new NODES (repos, levels, observers), not new edges — which
+    reframes every remaining structural prediction. -/
+theorem l0_flow_saturated :
+    ([s4, s5].all fun s =>
+      [julia, julia2, julia3].all fun r =>
+        [julia, julia2, julia3].all fun r' => r == r' || aiFlows s r r') = true := by
   decide
 
 /-- **The designer only adds.** Each snapshot's write relation strictly
@@ -262,7 +302,9 @@ theorem rule_is_resolution_fragile :
   ⟨⟨strangerSbx, strangerNinja, by decide⟩, by decide⟩
 
 /-! Axiom ledger, printed at build time. -/
-#print axioms no_stable_epochs
+#print axioms no_stable_epochs_through_s4
+#print axioms s5_adds_no_edge
+#print axioms l0_flow_saturated
 #print axioms write_relation_grows
 #print axioms observed_blindness
 #print axioms observed_no_descent
