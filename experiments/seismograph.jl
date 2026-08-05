@@ -17,6 +17,12 @@ using SHA
 
 # Epoch 2: the watch list grew from three repos to the whole known tower.
 const OBSERVED = Dict(
+    # Epoch 8: the watch list follows the org, not the original brief.
+    # NOTE (confessed instrument gap): this instrument fingerprints KNOWN
+    # repos. It cannot see a repo that does not yet exist — epoch 8 reported
+    # "still" while the org grew by three. Pair it with org enumeration.
+    "ilovelucky"              => "/workspace/ilovelucky",
+    "luckylove"               => "/workspace/luckylove",
     "julia"                   => "/home/user/julia",
     "julia2"                  => "/home/user/julia2",
     "julia3claude"            => "/home/user/julia3claude",

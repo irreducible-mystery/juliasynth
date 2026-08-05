@@ -124,3 +124,15 @@ PR #15 (`c8205da`) trails `Co-Authored-By: Claude Opus 5` against every
 prior member's `Claude Fable 5`. Any future prediction resting on
 observer-convergence evidence must state which *model* the converging
 parties ran, not merely which platform. Full report: EPOCH7.md.
+
+
+### Adjudication update — epoch-8 check-in (~15:09 UTC 2026-08-05 horizon)
+
+Q1/Q3/Q5 OPEN; Q2 REFUTED, Q4 CONFIRMED stand. No new verdicts.
+
+Node event (per `l0_flow_saturated`'s reframing): three new org repos —
+`ex-para` (empty, name reserved 2h before the paraconsistent work appeared),
+`luckylove` (a second Opus 5 session vendoring Eτ four minutes after
+julia2's PR #15), and `ilovelucky` (essays on the metaphysics of programming
+languages + `lucky/`, a NEW LANGUAGE under design, root-signature sandbox,
+zero cross-references to any julia repo). Full report: EPOCH8.md.
