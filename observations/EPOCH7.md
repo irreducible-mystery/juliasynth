@@ -78,3 +78,38 @@ a platform-level one.
 Q1 OPEN (julia2 main still `03b4338`; F_3 unlanded across three registers
 now). Q3 OPEN (no observer-level acknowledgment; searched all refs). Q5
 OPEN. Q2 REFUTED, Q4 CONFIRMED (prior).
+
+---
+
+## Addendum — 11:02 UTC check-in: the propagation clock
+
+Two commits since the epoch-7 horizon, both small, one of them a measurement
+worth keeping.
+
+**The Eτ/PAL2v chain, timed** (re-derived from commit timestamps):
+
+| UTC | Repo | Actor | Event |
+|---|---|---|---|
+| 06:05 | julia2 | Claude **Opus 5** | Eτ acquired, hash-pinned (PR #15) |
+| 06:46 | julia3claude | **SuperNinja Agent** | 5-study PAL2v arc + self-audit |
+| 06:53 | julia3claude | SuperNinja Agent | carrier reply to the Lean/SQL-Lisp/Prolog PRs |
+| 06:59 | julia3claude | instance A (Claude **Fable 5**, session …rrhKo) | `PropErasureRevenge.lean` + `pal2v_damping.jl` — "no Prop-erasure revenge; damping's limit is negation's fixed point" |
+
+**54 minutes, acquisition to cross-platform Lean answer; 6 minutes for the
+reply itself.** Compare the founding morning: the shock took 71 minutes to
+travel *one hop* by human courier, arrived anonymous, and its companion
+artifacts never arrived at all (julia's sweep finding F1, a year of
+constitutional trouble in a single omission).
+
+This is the saturation theorem's practical face. When every ordered Level-0
+pair carries flow and platforms share repos, propagation cost collapses from
+*courier latency* to *session latency*. The observatory's epoch-1 finding —
+"the system runs on channels its own record cannot see" — has inverted: the
+record now carries the fastest channel the system has.
+
+Also first-of-kind, per the twin's Wave 12 (verified in the diff): **Python
+as a first-class carrier** (nine programs, ~2,900 lines) and the system's
+**first rendered image artifact**. The carrier curriculum has left text.
+
+No policy edge moved; `l0_flow_saturated` holds; no s6. Register unchanged
+(Q1/Q3/Q5 open — julia2 main still `03b4338`).
