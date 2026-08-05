@@ -112,3 +112,15 @@ Full epoch report: EPOCH4.md. Original wording untouched.
 
 Register v2 running score: 1 confirmed (Q4), 1 refuted (Q2), 3 open.
 Full epoch report: EPOCH6.md. Original wording untouched.
+
+
+### Adjudication update — epoch-7 check-in (~06:57 UTC 2026-08-05 horizon)
+
+Q1/Q3/Q5 remain OPEN; Q2 REFUTED and Q4 CONFIRMED stand. No new verdicts.
+
+Grounds-update worth logging: the register's implicit assumption that
+"Claude sessions" form one correlated block is now **falsified** — julia2
+PR #15 (`c8205da`) trails `Co-Authored-By: Claude Opus 5` against every
+prior member's `Claude Fable 5`. Any future prediction resting on
+observer-convergence evidence must state which *model* the converging
+parties ran, not merely which platform. Full report: EPOCH7.md.
