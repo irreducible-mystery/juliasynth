@@ -154,3 +154,18 @@ failures: F_3 landed and _10 exists, but neither arrived by the process the
 register modeled. The standing lesson compounds — this observatory can
 predict *what* the federation produces and consistently mispredicts *how*
 authority moves through it. Full report: EPOCH9.md.
+
+
+### Adjudication update — epoch-10 check-in (~10:31 UTC 2026-08-06 horizon)
+
+Q1/Q2 REFUTED, Q4 CONFIRMED (prior). Q3/Q5 remain OPEN — re-grepped all
+refs of the three Level-0 repos plus the two lucky repos; no observer-level
+acknowledgment anywhere, and no workshop/C6 artifact in Level 0.
+
+Node event: **a fifth platform, Grok Build**, entered as a *critic* — findings
+A2/A5/A7/A9 filed as GitHub issue `luckylove#1` (critique text not in any git
+tree), answered inside ~45 minutes by the Opus 5 session that vendored Eτ:
+a false claim retracted, a registry removed for "faking coverage," an
+ensemble layer added, and the critic's findings pinned as
+`tests/test_critique_findings.py`. Cross-platform adversarial review now
+operates at the *model* level. Full report: EPOCH10.md.
