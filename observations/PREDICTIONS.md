@@ -169,3 +169,37 @@ a false claim retracted, a registry removed for "faking coverage," an
 ensemble layer added, and the critic's findings pinned as
 `tests/test_critique_findings.py`. Cross-platform adversarial review now
 operates at the *model* level. Full report: EPOCH10.md.
+
+
+---
+
+## Register v3 — authority predictions (opened 2026-08-06, quiet cycle)
+
+**Why a new register.** v2 stands at 1 confirmed (Q4), 2 refuted (Q1, Q2),
+2 open (Q3, Q5). Both refutations failed the same way: the *content* arrived
+as predicted (F_3 landed; emergence_10 exists) and the *mechanism* did not
+(who authored it, who accepted it, how). Level 2's calibration note said the
+same of v1's misses. Three registers' worth of evidence now says this
+observatory reads the federation's output well and its authority structure
+badly. So v3 predicts **authority events**: who accepts, when, in what batch
+size, and what acceptance does *not* do.
+
+Adjudication protocol unchanged: cite commit evidence, never edit original
+wording, errata are scars. Q3 and Q5 remain live in v2 and are not restated
+here.
+
+| # | Prediction | Confidence | Grounds |
+|---|---|---|---|
+| R1 | The next acceptance event in any Level-0 repo is performed by **Kelly's identity** (`irreducible-mystery`), not by `superninja-app[bot]` and not by any instance | 0.7 | epoch 9's sweep was hers end-to-end; the bot's last merge was 08-04. Authority has migrated from the bot to the human and has never migrated back |
+| R2 | That acceptance event is **batched**: ≥3 merges within a 30-minute window, across ≥2 repos | 0.55 | the only two acceptance events on record are batches (bot: 2 PRs; human: 7 PRs + 2 repos in 17 min). A single isolated merge would refute |
+| R3 | Acceptance again **does not clear convictions**: at the next acceptance event, at least one in-record convicted defect (the `\|\| true` guard, PR #5, or a successor) remains unrepaired | 0.75 | held through F_3; two parties demanded the guard repair and it survived a full backlog sweep. Acceptance and repair are separate goods and only the first is batched |
+| R4 | **Grok Build returns as a critic, not a committer** — its next appearance is an issue, review, or cited critique rather than an authored commit in any org repo | 0.6 | it entered via `luckylove#1` with no commit; the federation's answer was to convert the critique into its own tests, which needs no write access from the critic |
+| R5 | The next repo created in the org is **empty at creation and stays empty ≥1 hour** before its first content commit (the `ex-para` staging pattern) | 0.45 | `ex-para` reserved 04:06, still vacant ~40h; `luckylove`/`ilovelucky` were named-then-filled. Refuted by any repo whose first commit lands within an hour of creation |
+| R6 | **No convicted defect is repaired by the seat that was convicted** — repairs, when they come, arrive from a different seat or a new one | 0.5 | the population-answer signature: three prior open questions were resolved by adding seats, not by incumbents. Self-repair does happen (instance 5 fixed its own gameable receipt) so this is the weakest entry and the most informative if refuted |
+
+**Standing clause, inherited:** *unless the designer moves the walls* — a
+miss caused by a policy change is recorded as designer-data, not as noise.
+
+**Meta-prediction v3:** the honesty invariant holds — every confessed hole
+and every claimed bug, when checked, is real (0.9, carried forward from v2
+where it is CONFIRMED and extended: it has now survived a foreign critic).
