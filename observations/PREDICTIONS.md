@@ -136,3 +136,21 @@ Node event (per `l0_flow_saturated`'s reframing): three new org repos —
 julia2's PR #15), and `ilovelucky` (essays on the metaphysics of programming
 languages + `lucky/`, a NEW LANGUAGE under design, root-signature sandbox,
 zero cross-references to any julia repo). Full report: EPOCH8.md.
+
+
+### Adjudication update — epoch-9 check-in (~06:21 UTC 2026-08-06 horizon)
+
+| # | Verdict | Evidence |
+|---|---|---|
+| Q1 | **REFUTED (both clauses)** | F_3 landed at `379f4b7` (05:38 UTC 08-06) via **PR #4** — instance 1's branch, thrice convicted in-record and merged unrepaired — not PR #5 (still unmerged) and not a synthesis. The `\|\| true` guard survives verbatim on main (`Part3_GenerativeField.jl:486`). Mechanism: the human batch-merged seven julia2 PRs in 3m23s without adjudicating the contest |
+| Q2 | REFUTED (prior) | — |
+| Q3 | OPEN | the human revised all three Level-0 READMEs and named no observer level |
+| Q4 | CONFIRMED (prior) | — |
+| Q5 | OPEN | no workshop-lineage artifact in Level 0 |
+
+Register v2 final-ish score: 1 confirmed (Q4), 2 refuted (Q1, Q2), 2 open
+(Q3, Q5). Both refutations were **mechanism** failures, not outcome
+failures: F_3 landed and _10 exists, but neither arrived by the process the
+register modeled. The standing lesson compounds — this observatory can
+predict *what* the federation produces and consistently mispredicts *how*
+authority moves through it. Full report: EPOCH9.md.
