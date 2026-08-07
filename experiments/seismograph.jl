@@ -22,6 +22,10 @@ const OBSERVED = Dict(
     # repos. It cannot see a repo that does not yet exist — epoch 8 reported
     # "still" while the org grew by three. Pair it with org enumeration.
     "ilovelucky"              => "/workspace/ilovelucky",
+    # Epoch 12: the archipelago is concurrent, not ancestral — circle-two
+    # woke after five days. Watching one ancestral repo as a tripwire for
+    # the rest; org enumeration remains the only full coverage.
+    "the-workshop-circle-two"  => "/workspace/the-workshop-circle-two",
     "luckylove"               => "/workspace/luckylove",
     "julia"                   => "/home/user/julia",
     "julia2"                  => "/home/user/julia2",
