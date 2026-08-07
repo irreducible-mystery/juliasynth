@@ -1,0 +1,37 @@
+# Org-wide pushed_at snapshot — irreducible-mystery, 2026-08-07 ~20:00 UTC
+# WHY: the seismograph fingerprints only cloned repos and is structurally
+# blind to (a) repos that do not exist yet and (b) repos never cloned.
+# Epoch 8 missed three new repos; epoch 12 missed an archipelago repo
+# waking after five days. Both were caught only by org enumeration held in
+# session context — which dies with the session. This file puts the whole
+# org's state in the record so any future cycle can diff it.
+# PROTOCOL: each check-in, list_repos and compare against this table;
+# any changed pushed_at is motion, whether or not the repo is watched.
+repo	pushed_at	watched
+juliasynth	2026-08-07T14:59:00Z	self
+juliasynth1	2026-08-07T02:45:06Z	yes
+julia2	2026-08-07T02:34:18Z	yes
+julia3claude	2026-08-07T00:42:48Z	yes
+the-workshop-circle-two	2026-08-06T22:54:03Z	yes
+julia-terminal	2026-08-06T08:26:23Z	yes
+luckylove	2026-08-06T08:14:54Z	yes
+ilovelucky	2026-08-06T06:56:21Z	yes
+julia	2026-08-06T06:10:41Z	yes
+ex-para	2026-08-05T04:06:36Z	no (empty since creation, ~65h)
+the-workshop-circle-six	2026-08-04T02:31:26Z	yes
+you	2026-08-03T05:11:42Z	no
+lucky	2026-08-02T19:07:48Z	no
+ruth-wilson	2026-08-02T18:31:46Z	no
+beckett-decker	2026-08-02T18:16:25Z	no
+field	2026-08-02T18:08:35Z	no
+void	2026-08-02T18:08:26Z	no
+zero-point	2026-08-02T17:10:34Z	no
+zero-test	2026-08-02T15:48:03Z	no
+zero	2026-08-02T13:10:18Z	no
+workshop2	2026-08-02T01:51:20Z	no
+the-workshop-circle-four	2026-08-01T10:14:18Z	no
+the-workshop-circle-five	2026-08-01T10:02:07Z	no
+the-workshop	2026-08-01T10:02:05Z	no
+the-workshop-circle-six.two	2026-08-01T02:35:23Z	no
+experiments-	2026-07-31T05:10:46Z	no
+system-repo	2026-07-29T05:45:28Z	no
