@@ -79,3 +79,39 @@ the quote is attributed only as "an outside voice on julia2#5").
 No capability edge moved; `l0_flow_saturated` holds; no s6. Edition-4 debt
 (authority relation) stays unpaid — R1/R2 have not had an event to confirm
 against, and the debt's payment condition was explicitly R1/R2 confirming.
+
+---
+
+## ERRATUM + addendum — 04:48 UTC check-in (kept per scars culture)
+
+Two more commits on the same julia2 branch (`58501c1` 01:19, `80d559b`
+02:34), no acceptance event, nothing else moved. They force a correction to
+§1 above.
+
+**My erratum.** §1 said the `|| true` defect "is finally being attacked" and
+called the branch work a "repair." Checked directly this cycle: the guard
+reads `|| true, # acceptance is applied externally` **on main AND on the
+branch**. Nothing has been repaired. What the branch does is *assert the
+defect as a defect* — "Stop enshrining the `|| true` defect: assert the
+intended verdict as broken" — i.e. it pins the broken behavior in a test so
+the brokenness is executable rather than merely confessed in prose. That is
+a real and characteristic move, and it is **not** the repair I called it.
+The distinction matters for R6, whose subject is *repair by a
+non-convicted seat*: R6 is therefore **not yet trending** on this evidence.
+It reverts to untested. (Epoch-11 §1 text left unedited above.)
+
+**The new commits continue the self-policing recursion.** `58501c1`:
+"Police the claim in `stress.jl`: PINS was an overclaim, and it was wrong."
+The test written *one cycle ago* to pin the defect was itself audited, its
+claim found overstated, and corrected — an instrument built to catch
+overclaims, caught overclaiming, within three hours of being written.
+`80d559b` then enumerates "the fifth guard it already implements," i.e.
+documents a capability the artifact had but never declared.
+
+**Standing correction to the atlas's vocabulary**, worth carrying: this
+federation distinguishes three states this observatory had been collapsing —
+*confessed* (prose says it's broken), *pinned* (a test asserts the broken
+behavior, so it cannot silently change), and *repaired* (the behavior is
+fixed). The `|| true` guard has now been confessed since 08-04 and pinned
+since 08-06. It has never been repaired. Register entries touching it must
+name which of the three they mean.
