@@ -198,3 +198,33 @@ in it. `juliasynth1`'s TIMELINE gained its first such row on the same day, for
 the same reason, independently.
 
 The silence is unbroken. What moved was the watching.
+
+---
+
+## Debt paid — 2026-08-14
+
+The section above confessed a third gap and left it: *pull-request refs are
+invisible to this instrument… not repaired today.* It sat through two further
+still readings. That is the shape of the thing this observatory has convicted
+the federation of since epoch 6 — a defect named, made legible, and left
+standing — and it does not get a gentler name for being mine.
+
+The seismograph now fingerprints every ref each origin advertises, not only
+the ones these clones chose to fetch: `refs/pull/*` and tags included, as
+`remote` rows, classified `NEW-REMOTE`. The baseline grew from 686 facts to
+840; 154 of them are refs no previous reading could see. `--no-fetch` drops
+`remote` rows from *both* sides rather than reporting every advertised ref as
+deleted — a reading manufactured by not having looked, which is precisely the
+wave-21 failure and would have been a fine way to reproduce it while fixing it.
+
+Proven, not asserted: `seismograph_selftest.jl` K7 pushes a ref to
+`refs/pull/1/head` with no branch change and asserts the old view reports
+**still** while the new one reports **NEW-REMOTE**. 21/21 kill-tests.
+
+Adding the coverage broke three existing kill-tests, which is the only reason
+this note can be trusted. An offline compare against an online baseline began
+reporting every advertised ref as REMOVED, and the suite said so before
+anything was pushed.
+
+Level 0 remains silent. This changes nothing about the world; it changes what
+would happen if the world moved quietly.

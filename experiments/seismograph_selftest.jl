@@ -128,11 +128,24 @@ mktempdir() do dir
     o = Dict(("r", "ref", "main") => "aaa", ("r", "file", "x") => "h1")
     check("K6a moved ref → NEW-COMMIT",
           drift(o, Dict(("r", "ref", "main") => "bbb", ("r", "file", "x") => "h1")) ==
-          ["NEW-COMMIT  r :: main"])
+          ["NEW-COMMIT   r :: main"])
     check("K6b vanished ref → REMOVED, not silence",
-          drift(o, Dict(("r", "file", "x") => "h1")) == ["REMOVED     r :: main"])
+          drift(o, Dict(("r", "file", "x") => "h1")) == ["REMOVED      r :: main"])
     check("K6c new file → FILE-ADDED",
-          drift(o, merge(o, Dict(("r", "file", "y") => "h2"))) == ["FILE-ADDED  r :: y"])
+          drift(o, merge(o, Dict(("r", "file", "y") => "h2"))) == ["FILE-ADDED   r :: y"])
+
+    println("\nK7. The refs/pull blindness, and the repair that closed it")
+    # A pull request advertises refs the clone never fetches. Until 2026-08-14
+    # one could open, update and close in any observed repo without moving a
+    # single fact in the fingerprint. This is the test the repair had to pass.
+    record(repos; path = fp, fetch = true)
+    git("push", "-q", "origin", "HEAD:refs/pull/1/head"; dir = work)
+    check("K7a v1 (refs/heads only) is blind to the new pull ref",
+          compare(repos; path = fp, fetch = false) == 0)
+    check("K7b v2 sees it", compare(repos; path = fp, fetch = true) == 1)
+    check("K7c and classifies it NEW-REMOTE, not NEW-BRANCH",
+          any(startswith(l, "NEW-REMOTE") for l in
+              drift(read_fprint(fp), as_dict(fingerprint(repos)))))
 end
 
 println()

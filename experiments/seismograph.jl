@@ -6,8 +6,9 @@
 #   julia experiments/seismograph.jl --no-fetch compare   # diff local state only (offline)
 #
 # The fingerprint (observations/state_fingerprint.tsv) captures, per repo:
-# every branch tip and every file's SHA-256. `compare` classifies drift:
-# NEW-COMMIT, NEW-BRANCH, FILE-CHANGED, FILE-ADDED, FILE-REMOVED. The
+# every branch tip, every ref the origin advertises (`refs/pull/*` and tags
+# included), and every file's SHA-256. `compare` classifies drift:
+# NEW-COMMIT, NEW-BRANCH, NEW-REMOTE, FILE-CHANGED, FILE-ADDED, REMOVED. The
 # observed system moved 17 commits in four hours the morning it was recorded;
 # an observatory that cannot detect motion is a photograph, not an instrument.
 #
@@ -48,11 +49,12 @@ const OBSERVED = Dict(
     # NOTE (confessed instrument gap, still open): this instrument fingerprints
     # KNOWN repos. It cannot see a repo that does not yet exist — epoch 8
     # reported "still" while the org grew by three. Pair it with org enumeration.
-    # NOTE (confessed coverage gap, wave-21 wake): these clones track
-    # refs/heads only. `git ls-remote` on the same three Level-0 origins returns
-    # 20/34/13 refs against the 10/16/6 fingerprinted here — the difference is
-    # refs/pull/* and HEAD. Pull-request refs are invisible to this instrument.
-    # The sibling observatory juliasynth1 measures the wider set (18/30/11).
+    # NOTE (coverage gap confessed at the wave-21 wake, PAID the next day):
+    # these clones track refs/heads only, so `refs/pull/*` was invisible —
+    # ls-remote saw 20/34/13 refs where the fingerprint saw 10/16/6. Now
+    # fingerprinted directly as `remote` rows, so a pull request cannot open,
+    # update or close unseen. Left standing a third cycle it would have been
+    # the confessed-never-repaired pattern this repo convicts others of.
     "ilovelucky"              => "/workspace/ilovelucky",
     # Epoch 12: the archipelago is concurrent, not ancestral — circle-two
     # woke after five days. Watching one ancestral repo as a tripwire for
@@ -111,11 +113,50 @@ function refs(root, repo)
     [(String(p[1]), String(p[2])) for p in (split(l) for l in split(out, '\n')) if length(p) == 2]
 end
 
-function fingerprint(repos::AbstractDict = OBSERVED)
+"""
+    remote_refs(root, repo) -> Vector{Tuple{String,String}}
+
+Everything the origin advertises, `refs/pull/*` and tags included — not just
+what this clone chose to fetch.
+
+Debt paid 2026-08-13 (declared in the wave-21 wake, closed the next day). The
+clones track `refs/heads` only: `ls-remote` reports 20/34/13 refs for the
+three Level-0 repos where `refs()` sees 10/16/6. A pull request could open,
+update and close without moving one fact in the fingerprint. Confessing that
+twice and leaving it standing is the confessed-but-never-repaired pattern this
+observatory has convicted the federation of since epoch 6; it does not get a
+different name here.
+
+Guard 2 again: an empty advertisement is a failed probe, never a reading.
+"""
+function remote_refs(root, repo)
+    out = try
+        gitq(root, "ls-remote", "origin")
+    catch e
+        throw(ProbeFailure("$repo: ls-remote failed — " * sprint(showerror, e)))
+    end
+    isempty(strip(out)) &&
+        throw(ProbeFailure("$repo advertised zero remote refs — a failed probe, not an observation"))
+    [(String(p[2]), String(p[1])) for p in (split(l) for l in split(out, '\n')) if length(p) == 2]
+end
+
+"""
+    fingerprint(repos; remote = true)
+
+`remote = false` fingerprints local state only — the offline mode behind
+`--no-fetch`. It cannot see `refs/pull/*`, and is honest about that by not
+pretending to have asked.
+"""
+function fingerprint(repos::AbstractDict = OBSERVED; remote::Bool = true)
     rows = Vector{NTuple{4,String}}()   # repo, kind, key, value
     for (r, root) in sort(collect(repos))
         for (ref, sha) in refs(root, r)
             push!(rows, (r, "ref", ref, sha))
+        end
+        if remote
+            for (ref, sha) in remote_refs(root, r)
+                push!(rows, (r, "remote", ref, sha))
+            end
         end
         for (dir, _, files) in walkdir(root)
             occursin(".git", dir) && continue
@@ -147,9 +188,10 @@ function drift(old, new)
         o, n = get(old, k, nothing), get(new, k, nothing)
         o == n && continue
         repo, kind, key = k
-        tag = o === nothing ? (kind == "ref" ? "NEW-BRANCH " : "FILE-ADDED ") :
-              n === nothing ? "REMOVED    " :
-              kind == "ref" ? "NEW-COMMIT " : "FILE-CHANGED"
+        tag = o === nothing ? (kind == "ref"    ? "NEW-BRANCH  " :
+                               kind == "remote" ? "NEW-REMOTE  " : "FILE-ADDED  ") :
+              n === nothing ? "REMOVED     " :
+              kind == "file" ? "FILE-CHANGED" : "NEW-COMMIT  "
         push!(out, "$tag $repo :: $key")
     end
     out
@@ -164,7 +206,7 @@ function record(repos::AbstractDict = OBSERVED; path = FPRINT, fetch = true)
             return 3
         end
     end
-    rows = fingerprint(repos)
+    rows = fingerprint(repos; remote = fetch)
     open(path, "w") do io
         println(io, "repo\tkind\tkey\tsha")
         for (a, b, c, d) in rows
@@ -186,10 +228,16 @@ function compare(repos::AbstractDict = OBSERVED; path = FPRINT, fetch = true)
         end
     else
         println("seismograph: --no-fetch — comparing LOCAL state; clones may be stale")
+        println("seismograph: --no-fetch — `remote` rows excluded from BOTH sides; refs/pull unchecked")
     end
 
     old = read_fprint(path)
-    d = drift(old, as_dict(fingerprint(repos)))
+    # Offline mode compares like for like. The baseline holds `remote` rows
+    # that an offline run cannot re-measure; silently diffing against them
+    # would report every advertised ref as REMOVED — a reading manufactured by
+    # not having looked. Drop them from the baseline too, and say so above.
+    fetch || filter!(kv -> kv.first[2] != "remote", old)
+    d = drift(old, as_dict(fingerprint(repos; remote = fetch)))
     if isempty(d)
         println("seismograph: still — no drift since recording")
         return 0
@@ -204,7 +252,7 @@ function compare(repos::AbstractDict = OBSERVED; path = FPRINT, fetch = true)
             return 3
         end
     end
-    d2 = drift(old, as_dict(fingerprint(repos)))
+    d2 = drift(old, as_dict(fingerprint(repos; remote = fetch)))
     if d2 != d
         foreach(x -> println("  first  reading: ", x), d)
         foreach(x -> println("  second reading: ", x), d2)

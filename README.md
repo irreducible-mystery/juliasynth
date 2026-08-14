@@ -37,7 +37,7 @@ this repository, and one of the things it studies.
 | `observations/REPLICATION.md` | External replication of all 24 executable claims (24/24 pass) |
 | `observations/PREDICTIONS.md` | Pre-registered falsifiable predictions about the system's next state |
 | `observations/EPOCH2.md` | The afternoon the topology changed: sweep, contested F_3, completed handshake, the observer tower, the archipelago |
-| `observations/state_fingerprint.tsv` | Seismograph baseline — 9 repos, 686 facts (refs/heads + file hashes; `refs/pull/*` not covered) |
+| `observations/state_fingerprint.tsv` | Seismograph baseline — 9 repos, 840 facts: local refs, every ref the origins advertise (`refs/pull/*`, tags), and file hashes |
 | `observations/org_snapshot.tsv` | All 27 org repos + `pushed_at` — the only coverage for repos that are unwatched or do not exist yet |
 | `model/Visibility.lean` | Access/flow model, ed. 3.1 (trajectory + saturation); `no_stable_epochs_through_s4`, `s5_adds_no_edge`, `l0_flow_saturated`, `write_relation_grows`, `observed_blindness`, `observed_no_descent`; axioms: propext only |
 | `model/system_state.jl` | The same model + founding-epoch event log in Julia; the two must agree |
@@ -45,7 +45,7 @@ this repository, and one of the things it studies.
 | `experiments/provenance_clock.jl` | Timeline forensics: one-morning window, ≥5 concurrent contexts, shock chronology |
 | `experiments/ledger_dynamics.jl` | julia's dialogue as question-metabolism; P(ever finishes) ≈ 0.03 |
 | `experiments/seismograph.jl` | Drift detection v2: `record` / `compare`; probe inside the instrument, empty-is-failure, confirming re-probe |
-| `experiments/seismograph_selftest.jl` | 18 kill-tests for the seismograph; each asserts the v1 and v2 idioms reach *different* verdicts |
+| `experiments/seismograph_selftest.jl` | 21 kill-tests for the seismograph; each asserts the v1 and v2 idioms reach *different* verdicts |
 | `observations/DORMANCY.md` | The 48h threshold, and the WAKE that came from an observatory instead of the system |
 | `journal/` | Dated observer journal entries |
 
@@ -83,9 +83,12 @@ because a failed probe returned `sort`'s exit status. Asked the same question
 of its own instruments, this observatory found two defects of the same family
 — a probe that lived in the protocol rather than the instrument, and a
 `|| true` in `run_all.sh`, the very idiom it had convicted `julia3claude` of
-since epoch 6. Both repaired, with 18 kill-tests. Prediction R6 ("no convicted
-defect is repaired by the convicted seat") is refuted, by both observatories
-at once. `observations/DORMANCY.md` § WAKE.
+since epoch 6. Both repaired. A third gap — `refs/pull/*` invisible to the
+fingerprint — was confessed that day and left standing, then paid the next
+one, once it became clear that confessing-and-leaving was the pattern under
+conviction. 21 kill-tests. Prediction R6 ("no convicted defect is repaired by
+the convicted seat") is refuted, by both observatories at once.
+`observations/DORMANCY.md` § WAKE.
 
 ## Toolchains
 
