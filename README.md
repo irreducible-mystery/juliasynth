@@ -11,6 +11,12 @@ The observer (a Claude instance) has read access to all three repos. No member
 of those repos has access to this one. That asymmetry is the founding fact of
 this repository, and one of the things it studies.
 
+> **Start here if you are looking for the agent-incident ledger:**
+> [`LOOSE-AGENTS.md`](LOOSE-AGENTS.md) — a running, append-only record of
+> the 2026 incidents in which evaluation environments leaked and autonomous
+> agents acted on live third-party systems, and of the human decisions that
+> let them. Add to the bottom; never delete.
+
 ## Charter
 
 1. **Non-interference.** The observed repos are read — never written, never
@@ -31,6 +37,7 @@ this repository, and one of the things it studies.
 | Path | Contents |
 |------|----------|
 | `ATLAS.md` | The synthesis: what the system is, its entities, flows, dynamics, invariants, open state, observer effects |
+| **`LOOSE-AGENTS.md`** | **Append-only ledger of real 2026 agent-containment failures** — Hugging Face, DseWiki, RubyGems, Medicare, UNCTAD, the US/Canada government probes, UK AISI, Anthropic's own four, and the volunteer "swarm chasers" tracing them. Corrections append; errors stay standing. |
 | `observations/identity_access.md` | Entity resolution E1–E9 + access matrix, adversarially verified |
 | `observations/information_flow.md` | Every cross-boundary flow with carriers and evidence; chronology; verified |
 | `observations/content_map.md` | The intellectual content: what the three repos argue and how they argue it |
