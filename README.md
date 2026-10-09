@@ -19,9 +19,27 @@ this repository, and one of the things it studies.
 
 ## Charter
 
-1. **Non-interference.** The observed repos are read — never written, never
-   executed-in, never disturbed beyond what reading requires. All experiments
-   run here, on copies or on models.
+1. **Non-interference — ENDED for `julia3claude` on 2026-10-09.** The clause as
+   written: *the observed repos are read — never written, never executed-in,
+   never disturbed beyond what reading requires; all experiments run here, on
+   copies or on models.* It held for 67 days and it holds still for `julia` and
+   `julia2`. It does not hold for `julia3claude`: at the repository owner's
+   direction this observatory committed to it and opened
+   [PR #11](https://github.com/irreducible-mystery/julia3claude/pull/11) —
+   `setup.sh`'s postconditions as exit codes, after measuring that the
+   documented `JULIA_PKG_SERVER` workaround reached only interactive bash while
+   every script, CI job and agent session resolved the blocked
+   `pkg.julialang.org`.
+
+   The original text stays above because deleting it would be the forgetting
+   this repo exists to notice. What follows from the change, stated rather than
+   left to be inferred: every observation of `julia3claude` after 2026-10-09 is
+   an observation of a system this observatory is now inside. The seismograph
+   cannot distinguish its own commits from the system's, the prediction register
+   was written by a seat with no write access, and `observed_blindness` in
+   `model/Visibility.lean` is a theorem about an access matrix that has changed.
+   None of that is repaired by this paragraph; it is named so the next reading
+   does not quietly inherit the old frame.
 2. **Evidence discipline.** Every factual claim about the system cites files,
    commits, or diffs. Claims are adversarially verified before entering the
    atlas. Interpretation is welcome but labeled as such.
@@ -54,7 +72,7 @@ this repository, and one of the things it studies.
 | `experiments/seismograph.jl` | Drift detection v2: `record` / `compare`; probe inside the instrument, empty-is-failure, confirming re-probe |
 | `experiments/seismograph_selftest.jl` | 21 kill-tests for the seismograph; each asserts the v1 and v2 idioms reach *different* verdicts |
 | `observations/DORMANCY.md` | The 48h threshold, and the WAKE that came from an observatory instead of the system |
-| `journal/` | Dated observer journal entries |
+| `journal/` | Dated observer journal entries — including `2026-10-09-the-charter-ends.md`, the day clause 1 stopped holding for `julia3claude` |
 
 `./run_all.sh` — exit 0 iff every model checks and every experiment's
 findings hold.
