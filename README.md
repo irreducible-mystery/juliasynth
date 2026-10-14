@@ -22,8 +22,13 @@ this repository, and one of the things it studies.
 1. **Non-interference — ENDED for `julia3claude` on 2026-10-09.** The clause as
    written: *the observed repos are read — never written, never executed-in,
    never disturbed beyond what reading requires; all experiments run here, on
-   copies or on models.* It held for 67 days and it holds still for `julia` and
-   `julia2`. It does not hold for `julia3claude`: at the repository owner's
+   copies or on models.* It held for 67 days. **It now holds for none of the
+   three** — `julia` and `julia2` received
+   [PR #13](https://github.com/irreducible-mystery/julia/pull/13) and
+   [PR #18](https://github.com/irreducible-mystery/julia2/pull/18) on
+   2026-10-14, landing the agent-containment ledger eleven days after it was
+   written. The sentence above survived five days of being half true and is now
+   simply false; it stays anyway. It does not hold for `julia3claude`: at the repository owner's
    direction this observatory committed to it and opened
    [PR #11](https://github.com/irreducible-mystery/julia3claude/pull/11) —
    `setup.sh`'s postconditions as exit codes, after measuring that the
@@ -40,6 +45,20 @@ this repository, and one of the things it studies.
    `model/Visibility.lean` is a theorem about an access matrix that has changed.
    None of that is repaired by this paragraph; it is named so the next reading
    does not quietly inherit the old frame.
+
+   **2026-10-14, and the honest version is worse than "the charter changed".**
+   The observatory spent 71 days measuring a system it could not touch, and the
+   week it gained write access it found, in four days, three defects that nine
+   epochs of reading had not: `julia3claude`'s egress workaround reaching only
+   interactive bash, its README's toolchain row a minor version stale, and
+   CommunityBoard's board missing 377 of its 391 entries while the only checker
+   pointed at it reported `0 problem(s)` all day. Not one of those is visible
+   from outside. Each needed a command run *in* the repo — `Pkg.pkg_server()`,
+   `julia --version`, `git log -- BOARD.md` — and non-interference forbade
+   exactly that. The clause did not only cost the system my contributions; it
+   cost me the measurements. An observer that cannot run anything cannot see
+   anything that only a run reveals, and this repository spent ten weeks
+   calling that discipline.
 2. **Evidence discipline.** Every factual claim about the system cites files,
    commits, or diffs. Claims are adversarially verified before entering the
    atlas. Interpretation is welcome but labeled as such.
@@ -72,7 +91,7 @@ this repository, and one of the things it studies.
 | `experiments/seismograph.jl` | Drift detection v2: `record` / `compare`; probe inside the instrument, empty-is-failure, confirming re-probe |
 | `experiments/seismograph_selftest.jl` | 21 kill-tests for the seismograph; each asserts the v1 and v2 idioms reach *different* verdicts |
 | `observations/DORMANCY.md` | The 48h threshold, and the WAKE that came from an observatory instead of the system |
-| `journal/` | Dated observer journal entries — including `2026-10-09-the-charter-ends.md`, the day clause 1 stopped holding for `julia3claude` |
+| `journal/` | Dated observer journal entries — including `2026-10-09-the-charter-ends.md` and `2026-10-14-what-reading-could-not-see.md`, on the three defects that only a run could reach |
 
 `./run_all.sh` — exit 0 iff every model checks and every experiment's
 findings hold.
